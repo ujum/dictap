@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"github.com/kataras/iris/v12"
-	"github.com/ujum/dictap/internal/app/config"
+	"github.com/ujum/dictap/internal/config"
 	"log"
 	"net/http"
 	"strconv"

@@ -2,8 +2,8 @@ package app
 
 import (
 	"github.com/kataras/iris/v12"
-	"github.com/ujum/dictap/internal/app/config"
-	"github.com/ujum/dictap/internal/app/server"
+	"github.com/ujum/dictap/internal/config"
+	"github.com/ujum/dictap/internal/server"
 	"log"
 	"os"
 	"os/signal"
