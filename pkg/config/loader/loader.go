@@ -32,7 +32,7 @@ func Load(configStruct interface{}, loadSettings *LoadSettings) error {
 		mergeSystemEnvConfig(loadSettings.EnvPrefix)
 	}
 	if err := viper.Unmarshal(configStruct); err != nil {
-		log.Fatalf("Unable to decode into struct, %v", err)
+		log.Fatalf("unable to decode into struct, %v", err)
 		return err
 	}
 	return nil
@@ -44,9 +44,9 @@ func mergeCommonConfig(loadSettings *LoadSettings) {
 	viper.SetConfigName(resolveFileName(loadSettings.FileNamePrefix, baseConfigName))
 	if err := viper.MergeInConfig(); err != nil {
 		log.Printf("%v", err)
-	} else {
-		log.Printf("Loaded %s config (%s)", baseConfigName, viper.ConfigFileUsed())
+		return
 	}
+	log.Printf("loaded %s config (%s)", baseConfigName, viper.ConfigFileUsed())
 }
 
 // merge app profile config file to config struct
@@ -63,11 +63,13 @@ func mergeAppEnvConfig(loadSettings *LoadSettings) {
 		viper.SetConfigName(resolveFileName(loadSettings.FileNamePrefix, profile))
 		if err := viper.MergeInConfig(); err != nil {
 			if err, ok := err.(viper.ConfigFileNotFoundError); ok {
-				log.Printf("Config for %s profile not found, %v", profile, err)
+				log.Printf("config for %s profile not found, %v", profile, err)
+			} else {
+				log.Printf("%v", err)
 			}
-		} else {
-			log.Printf("Loaded %v profile config (%s)", profile, viper.ConfigFileUsed())
+			return
 		}
+		log.Printf("loaded %v profile config (%s)", profile, viper.ConfigFileUsed())
 	}
 }
 
