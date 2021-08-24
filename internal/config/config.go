@@ -11,7 +11,8 @@ const (
 )
 
 type Config struct {
-	Server ServerConfig
+	Server   *ServerConfig
+	LogLevel string
 }
 
 type ServerConfig struct {

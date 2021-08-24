@@ -1,4 +1,5 @@
 app:
   profile: dev
+  logLevel: info
 server:
   port: 8080

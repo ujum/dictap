@@ -2,7 +2,9 @@ package config
 
 func defaultValue() *Config {
 	return &Config{
-		Server: ServerConfig{
+		Server: &ServerConfig{
 			Port: 8080,
-		}}
+		},
+		LogLevel: "info",
+	}
 }
