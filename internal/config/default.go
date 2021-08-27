@@ -5,6 +5,12 @@ func defaultValue() *Config {
 		Server: &ServerConfig{
 			Port: 8080,
 		},
-		LogLevel: "info",
+		Datasource: &DatasourceConfig{
+			Mongo: &MongoDatasourceConfig{
+				Port: 27017,
+				Host: "localhost",
+			},
+		},
+		Logger: &LoggerConfig{Level: "info"},
 	}
 }

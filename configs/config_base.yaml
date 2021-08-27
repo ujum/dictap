@@ -1,5 +1,10 @@
 app:
   profile: dev
-  logLevel: info
+logger:
+  level: info
 server:
   port: 8080
+datasource:
+  mongo:
+    host: localhost
+    port: 27018

@@ -3,7 +3,9 @@ package server
 import (
 	"context"
 	"github.com/kataras/iris/v12"
+	"github.com/ujum/dictap/internal/api/v1"
 	"github.com/ujum/dictap/internal/config"
+	"github.com/ujum/dictap/internal/service"
 	"github.com/ujum/dictap/pkg/logger"
 	"log"
 	"net/http"
@@ -12,10 +14,10 @@ import (
 )
 
 type Server struct {
-	iris   *iris.Application
-	runner iris.Runner
-	cfg    *config.ServerConfig
-	logger logger.Logger
+	Logger     logger.Logger
+	Iris       *iris.Application
+	httpServer *http.Server
+	Cfg        *config.ServerConfig
 }
 
 // logWriter implement io.Writer interface to adapt
@@ -29,11 +31,9 @@ func (lw *logWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func New(cfg *config.ServerConfig, appLogger logger.Logger) *Server {
+func New(cfg *config.ServerConfig, appLogger logger.Logger, services *service.Services) *Server {
 	irisApp := iris.New()
 	irisApp.Logger().Install(appLogger)
-
-	route(irisApp)
 	srv := &http.Server{
 		Addr:           ":" + strconv.Itoa(cfg.Port),
 		Handler:        irisApp,
@@ -42,20 +42,27 @@ func New(cfg *config.ServerConfig, appLogger logger.Logger) *Server {
 		MaxHeaderBytes: 1 << 20,
 		ErrorLog:       log.New(&logWriter{appLogger}, "", 0),
 	}
-	runner := iris.Server(srv)
 
-	return &Server{
-		iris:   irisApp,
-		runner: runner,
-		cfg:    cfg,
-		logger: appLogger,
+	appSrv := &Server{
+		Logger:     appLogger,
+		Iris:       irisApp,
+		httpServer: srv,
+		Cfg:        cfg,
 	}
+	requestHandler := v1.NewHandler(appLogger, services)
+	requestHandler.RegisterRoutes(irisApp)
+
+	return appSrv
 }
 
 func (appSrv *Server) Start() {
 	go func() {
-		if err := appSrv.iris.Run(appSrv.runner); err != nil {
-			appSrv.logger.Errorf("error during server starting, %+v", err)
+		if err := appSrv.Iris.Run(iris.Server(appSrv.httpServer)); err != nil {
+			if err == http.ErrServerClosed {
+				appSrv.Logger.Info("http: web server shutdown complete")
+			} else {
+				appSrv.Logger.Errorf("http: web server closed unexpect: %s", err)
+			}
 		}
 	}()
 }
@@ -65,17 +72,9 @@ func (appSrv *Server) Stop() {
 	defer func() {
 		cancel()
 	}()
-	if err := appSrv.iris.Shutdown(ctxShutDown); err != nil {
-		appSrv.logger.Warnf("server shutdown failed: %+v", err)
+	if err := appSrv.Iris.Shutdown(ctxShutDown); err != nil {
+		appSrv.Logger.Errorf("http: web server shutdown failed: %+v", err)
+		return
 	}
-	appSrv.logger.Info("http: Server closed")
-}
-
-func route(app *iris.Application) {
-	app.Get("/", func(ctx iris.Context) {
-		_, err := ctx.JSON(iris.Map{"app": "dictup"})
-		if err != nil {
-			ctx.StopWithError(iris.StatusBadRequest, err)
-		}
-	})
+	appSrv.Logger.Debug("http: web server closed")
 }

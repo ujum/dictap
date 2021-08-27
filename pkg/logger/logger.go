@@ -15,6 +15,8 @@ type Logger interface {
 	Warnf(format string, args ...interface{})
 	Error(...interface{})
 	Errorf(format string, args ...interface{})
+	Fatal(...interface{})
+	Fatalf(format string, args ...interface{})
 	Print(...interface{})
 	Println(...interface{})
 }
@@ -24,9 +26,9 @@ type logrusAdaper struct {
 }
 
 func New(cfg *config.Config) Logger {
-	level, err := logrus.ParseLevel(cfg.LogLevel)
+	level, err := logrus.ParseLevel(cfg.Logger.Level)
 	if err != nil {
-		logrus.Warnf("can't parse '%s' log level, using 'info'", cfg.LogLevel)
+		logrus.Warnf("can't parse '%s' log level, using 'info'", cfg.Logger.Level)
 		level = logrus.InfoLevel
 	}
 	return &logrusAdaper{
@@ -72,6 +74,15 @@ func (adapter *logrusAdaper) Error(args ...interface{}) {
 func (adapter *logrusAdaper) Errorf(format string, args ...interface{}) {
 	adapter.logger.Errorf(format, args)
 }
+
+func (adapter *logrusAdaper) Fatal(args ...interface{}) {
+	adapter.logger.Fatal(args)
+}
+
+func (adapter *logrusAdaper) Fatalf(format string, args ...interface{}) {
+	adapter.logger.Fatalf(format, args)
+}
+
 func (adapter *logrusAdaper) Print(args ...interface{}) {
 	adapter.logger.Print(args)
 }

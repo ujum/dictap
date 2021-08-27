@@ -66,11 +66,11 @@ func mergeAppEnvConfig(v *viper.Viper, loadSettings *LoadSettings) {
 			if err, ok := err.(viper.ConfigFileNotFoundError); ok {
 				log.Printf("config for %s profile not found, %v", profile, err)
 			} else {
-				log.Printf("%v", err)
+				log.Printf("%+v", err)
 			}
 			return
 		}
-		log.Printf("loaded %v profile config (%s)", profile, v.ConfigFileUsed())
+		log.Printf("loaded %s profile config (%s)", profile, v.ConfigFileUsed())
 	}
 }
 

@@ -11,12 +11,27 @@ const (
 )
 
 type Config struct {
-	Server   *ServerConfig
-	LogLevel string
+	Server     *ServerConfig
+	Logger     *LoggerConfig
+	Datasource *DatasourceConfig
 }
 
 type ServerConfig struct {
 	Port int
+}
+
+type LoggerConfig struct {
+	Level string
+}
+
+type DatasourceConfig struct {
+	Mongo *MongoDatasourceConfig
+}
+
+type MongoDatasourceConfig struct {
+	Port   int
+	Schema string
+	Host   string
 }
 
 func New(configDir string) (*Config, error) {

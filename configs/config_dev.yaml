@@ -1,3 +1,5 @@
 #profile config will override the base
-app:
-  logLevel: debug
+logger:
+  level: debug
+server:
+  port: 8080
