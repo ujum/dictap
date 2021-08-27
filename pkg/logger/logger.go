@@ -21,17 +21,17 @@ type Logger interface {
 	Println(...interface{})
 }
 
-type logrusAdaper struct {
+type LogrusAdaper struct {
 	logger logrus.Logger
 }
 
-func New(cfg *config.Config) Logger {
+func NewLogrus(cfg *config.Config) *LogrusAdaper {
 	level, err := logrus.ParseLevel(cfg.Logger.Level)
 	if err != nil {
 		logrus.Warnf("can't parse '%s' log level, using 'info'", cfg.Logger.Level)
 		level = logrus.InfoLevel
 	}
-	return &logrusAdaper{
+	return &LogrusAdaper{
 		logger: logrus.Logger{
 			Out:          os.Stdout,
 			Formatter:    &logrus.JSONFormatter{},
@@ -43,50 +43,50 @@ func New(cfg *config.Config) Logger {
 	}
 }
 
-func (adapter *logrusAdaper) Debug(args ...interface{}) {
+func (adapter *LogrusAdaper) Debug(args ...interface{}) {
 	adapter.logger.Debug(args)
 }
 
-func (adapter *logrusAdaper) Debugf(format string, args ...interface{}) {
+func (adapter *LogrusAdaper) Debugf(format string, args ...interface{}) {
 	adapter.logger.Debugf(format, args)
 }
 
-func (adapter *logrusAdaper) Info(args ...interface{}) {
+func (adapter *LogrusAdaper) Info(args ...interface{}) {
 	adapter.logger.Info(args)
 }
 
-func (adapter *logrusAdaper) Infof(format string, args ...interface{}) {
+func (adapter *LogrusAdaper) Infof(format string, args ...interface{}) {
 	adapter.logger.Infof(format, args)
 }
 
-func (adapter *logrusAdaper) Warn(args ...interface{}) {
+func (adapter *LogrusAdaper) Warn(args ...interface{}) {
 	adapter.logger.Warn(args)
 }
 
-func (adapter *logrusAdaper) Warnf(format string, args ...interface{}) {
+func (adapter *LogrusAdaper) Warnf(format string, args ...interface{}) {
 	adapter.logger.Warnf(format, args)
 }
 
-func (adapter *logrusAdaper) Error(args ...interface{}) {
+func (adapter *LogrusAdaper) Error(args ...interface{}) {
 	adapter.logger.Error(args)
 }
 
-func (adapter *logrusAdaper) Errorf(format string, args ...interface{}) {
+func (adapter *LogrusAdaper) Errorf(format string, args ...interface{}) {
 	adapter.logger.Errorf(format, args)
 }
 
-func (adapter *logrusAdaper) Fatal(args ...interface{}) {
+func (adapter *LogrusAdaper) Fatal(args ...interface{}) {
 	adapter.logger.Fatal(args)
 }
 
-func (adapter *logrusAdaper) Fatalf(format string, args ...interface{}) {
+func (adapter *LogrusAdaper) Fatalf(format string, args ...interface{}) {
 	adapter.logger.Fatalf(format, args)
 }
 
-func (adapter *logrusAdaper) Print(args ...interface{}) {
+func (adapter *LogrusAdaper) Print(args ...interface{}) {
 	adapter.logger.Print(args)
 }
 
-func (adapter *logrusAdaper) Println(args ...interface{}) {
+func (adapter *LogrusAdaper) Println(args ...interface{}) {
 	adapter.logger.Println(args)
 }

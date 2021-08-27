@@ -18,7 +18,7 @@ func Run(configFilePath string) {
 	if err != nil {
 		log.Printf("can't override default config. Using default. Reason: %+v", err)
 	}
-	appLogger := logger.New(appConfig)
+	appLogger := logger.NewLogrus(appConfig)
 	deps, err := createDependencies(appConfig, appLogger)
 	if err != nil {
 		appLogger.Errorf("can't create app dependencies: %v", err)
