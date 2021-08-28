@@ -12,20 +12,25 @@ type Services struct {
 
 type Deps struct {
 	Logger   logger.Logger
-	Services *Services
 	Clients  *client.Clients
+	Repos    *repo.Repositories
+	Services *Services
 }
 
-func New(appLogger logger.Logger, repos *repo.Repositories, clients *client.Clients) *Deps {
-	srvs := &Services{
+func NewServices(appLogger logger.Logger, repos *repo.Repositories) *Services {
+	return &Services{
 		UserService: &UserServiceImpl{
 			userRepo: repos.UserRepo,
 			logger:   appLogger,
 		},
 	}
+}
+
+func NewDeps(appLogger logger.Logger, clients *client.Clients, repos *repo.Repositories, services *Services) *Deps {
 	return &Deps{
 		Logger:   appLogger,
-		Services: srvs,
+		Repos:    repos,
 		Clients:  clients,
+		Services: services,
 	}
 }

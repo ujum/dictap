@@ -3,6 +3,7 @@ app:
 logger:
   level: info
 server:
+  host: localhost
   port: 8080
 datasource:
   mongo:
