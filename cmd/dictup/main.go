@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/ujum/dictap/internal/app"
-	"os"
+	"log"
 )
 
 const configDir = "configs"
@@ -12,7 +12,7 @@ func main() {
 	path := configPath()
 	err := app.Run(path)
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 

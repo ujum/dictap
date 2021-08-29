@@ -31,7 +31,9 @@ func Run(configFilePath string) error {
 		//cancel root and deps context
 		cancel()
 		depsCtxCancel()
-		deps.Clients.WaitDisconnect()
+		if deps.Clients != nil {
+			deps.Clients.WaitDisconnect()
+		}
 		return err
 	}
 
@@ -56,7 +58,7 @@ func Run(configFilePath string) error {
 func createDependencies(ctx context.Context, cfg *config.Config, appLogger logger.Logger) (*service.Deps, error) {
 	clients, err := client.New(ctx, cfg.Datasource, appLogger)
 	if err != nil {
-		return service.NewDeps(nil, clients, nil, nil), err
+		return service.NewDeps(appLogger, clients, nil, nil), err
 	}
 	repos := repo.New(cfg, appLogger, clients)
 	services := service.NewServices(appLogger, repos)

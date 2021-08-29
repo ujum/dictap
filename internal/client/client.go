@@ -28,5 +28,7 @@ func New(ctx context.Context, cfg *config.DatasourceConfig, appLogger logger.Log
 }
 
 func (clients *Clients) WaitDisconnect() {
-	clients.waitGroup.Wait()
+	if clients.waitGroup != nil {
+		clients.waitGroup.Wait()
+	}
 }
