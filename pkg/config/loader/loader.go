@@ -13,7 +13,7 @@ const applicationEnv = "APP_PROFILE"
 type LoadSettings struct {
 	ConfigFile *ConfigFileSettings
 	EnvPrefix  string
-	// Flag to load environment variables
+	// Flag to load environment variables (load only if file contains same var as env)
 	LoadSysEnv bool
 }
 
@@ -27,6 +27,7 @@ type ConfigFileSettings struct {
 
 // Load config from files and system env to app config struct.
 // Use 'APP_PROFILE' sys env key to denote app profile config.
+// Env variables override file vars (can't set without in file vars defining)
 func Load(configStruct interface{}, loadSettings *LoadSettings) error {
 	v := viper.New()
 	if loadSettings.ConfigFile != nil {
