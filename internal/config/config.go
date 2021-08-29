@@ -38,11 +38,13 @@ type MongoDatasourceConfig struct {
 func New(configDir string) (*Config, error) {
 	appConfig := defaultValue()
 	settings := &loader.LoadSettings{
-		LoadSysEnv:     true,
-		ConfigDir:      configDir,
-		FileNamePrefix: prefix,
-		ConfigType:     configType,
-		EnvPrefix:      envPrefix,
+		LoadSysEnv: true,
+		ConfigFile: &loader.ConfigFileSettings{
+			ConfigDir:      configDir,
+			FileNamePrefix: prefix,
+			ConfigType:     configType,
+		},
+		EnvPrefix: envPrefix,
 	}
 	err := loader.Load(appConfig, settings)
 	return appConfig, err

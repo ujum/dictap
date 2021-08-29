@@ -15,6 +15,10 @@ compile:
 	GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME}-linux-amd64.bin ${SOURCE_MAIN_NAME}
 	# Windows
 	GOOS=windows GOARCH=amd64 go build -o ${BINARY_NAME}-windows-amd64.exe ${SOURCE_MAIN_NAME}
+
+test:
+	go test ./...
+
 clean:
 	#go clean
 	rm -rfv ${BUILD_DIR}
