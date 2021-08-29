@@ -22,7 +22,7 @@ type Logger interface {
 }
 
 type LogrusAdaper struct {
-	logger logrus.Logger
+	logger *logrus.Logger
 }
 
 func NewLogrus(cfg *config.Config) *LogrusAdaper {
@@ -32,7 +32,7 @@ func NewLogrus(cfg *config.Config) *LogrusAdaper {
 		level = logrus.InfoLevel
 	}
 	return &LogrusAdaper{
-		logger: logrus.Logger{
+		logger: &logrus.Logger{
 			Out:          os.Stdout,
 			Formatter:    &logrus.JSONFormatter{},
 			Hooks:        make(logrus.LevelHooks),
@@ -44,49 +44,49 @@ func NewLogrus(cfg *config.Config) *LogrusAdaper {
 }
 
 func (adapter *LogrusAdaper) Debug(args ...interface{}) {
-	adapter.logger.Debug(args)
+	adapter.logger.Debug(args...)
 }
 
 func (adapter *LogrusAdaper) Debugf(format string, args ...interface{}) {
-	adapter.logger.Debugf(format, args)
+	adapter.logger.Debugf(format, args...)
 }
 
 func (adapter *LogrusAdaper) Info(args ...interface{}) {
-	adapter.logger.Info(args)
+	adapter.logger.Info(args...)
 }
 
 func (adapter *LogrusAdaper) Infof(format string, args ...interface{}) {
-	adapter.logger.Infof(format, args)
+	adapter.logger.Infof(format, args...)
 }
 
 func (adapter *LogrusAdaper) Warn(args ...interface{}) {
-	adapter.logger.Warn(args)
+	adapter.logger.Warn(args...)
 }
 
 func (adapter *LogrusAdaper) Warnf(format string, args ...interface{}) {
-	adapter.logger.Warnf(format, args)
+	adapter.logger.Warnf(format, args...)
 }
 
 func (adapter *LogrusAdaper) Error(args ...interface{}) {
-	adapter.logger.Error(args)
+	adapter.logger.Error(args...)
 }
 
 func (adapter *LogrusAdaper) Errorf(format string, args ...interface{}) {
-	adapter.logger.Errorf(format, args)
+	adapter.logger.Errorf(format, args...)
 }
 
 func (adapter *LogrusAdaper) Fatal(args ...interface{}) {
-	adapter.logger.Fatal(args)
+	adapter.logger.Fatal(args...)
 }
 
 func (adapter *LogrusAdaper) Fatalf(format string, args ...interface{}) {
-	adapter.logger.Fatalf(format, args)
+	adapter.logger.Fatalf(format, args...)
 }
 
 func (adapter *LogrusAdaper) Print(args ...interface{}) {
-	adapter.logger.Print(args)
+	adapter.logger.Print(args...)
 }
 
 func (adapter *LogrusAdaper) Println(args ...interface{}) {
-	adapter.logger.Println(args)
+	adapter.logger.Println(args...)
 }
