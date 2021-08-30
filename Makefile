@@ -2,6 +2,7 @@
 BUILD_DIR=./out
 BINARY_NAME=${BUILD_DIR}/dictup
 SOURCE_MAIN_NAME=./cmd/dictup/main.go
+SWAGGER_SCAN=./internal/app/app.go
 
 build:
 	go build -o ${BINARY_NAME} ${SOURCE_MAIN_NAME}
@@ -25,3 +26,10 @@ clean:
 
 goinstall:
 	go install $$(go list ./...)
+
+
+check-swagger:
+	which swag || (go get -u github.com/swaggo/swag/cmd/swag)
+
+swagger:
+	swag init -g ${SWAGGER_SCAN} -o ./docs

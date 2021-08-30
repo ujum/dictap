@@ -8,8 +8,9 @@ func defaultValue() *Config {
 		},
 		Datasource: &DatasourceConfig{
 			Mongo: &MongoDatasourceConfig{
-				Host: "localhost",
-				Port: 27017,
+				Host:   "localhost",
+				Port:   27017,
+				Schema: "dictup",
 			},
 		},
 		Logger: &LoggerConfig{Level: "info"},

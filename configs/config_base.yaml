@@ -9,3 +9,4 @@ datasource:
   mongo:
     host: localhost
     port: 27017
+    schema: dictup

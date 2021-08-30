@@ -11,7 +11,8 @@ type Repositories struct {
 }
 
 func New(cfg *config.Config, log logger.Logger, clients *client.Clients) *Repositories {
+	mongoDatabase := clients.Mongo.Client.Database(cfg.Datasource.Mongo.Schema)
 	return &Repositories{
-		UserRepo: NewUserRepoMongo(cfg, log, clients.Mongo),
+		UserRepo: NewUserRepoMongo(cfg, log, mongoDatabase.Collection("users")),
 	}
 }

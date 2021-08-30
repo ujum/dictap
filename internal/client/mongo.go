@@ -14,7 +14,7 @@ import (
 type MongoClient struct {
 	logger logger.Logger
 	cfg    *config.MongoDatasourceConfig
-	client *mongo.Client
+	Client *mongo.Client
 }
 
 func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg *config.MongoDatasourceConfig, log logger.Logger) (*MongoClient, error) {
@@ -44,7 +44,7 @@ func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg
 	mc := &MongoClient{
 		logger: log,
 		cfg:    cfg,
-		client: client,
+		Client: client,
 	}
 	waitGroup.Add(1)
 	go func() {
@@ -63,7 +63,7 @@ func (mongoClient *MongoClient) Query() {
 }
 
 func (mongoClient *MongoClient) Disconnect(ctx context.Context) error {
-	if err := mongoClient.client.Disconnect(ctx); err != nil {
+	if err := mongoClient.Client.Disconnect(ctx); err != nil {
 		return err
 	}
 	mongoClient.logger.Debug("mongo client disconnected")

@@ -50,9 +50,8 @@ func New(cfg *config.ServerConfig, appLogger logger.Logger, services *service.Se
 		httpServer: srv,
 		Cfg:        cfg,
 	}
-	requestHandler := v1.NewHandler(appLogger, services)
+	requestHandler := v1.NewHandler(appLogger, cfg, services)
 	requestHandler.RegisterRoutes(irisApp)
-
 	return appSrv
 }
 
