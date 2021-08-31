@@ -2,12 +2,15 @@
 BUILD_DIR=./out
 BINARY_NAME=${BUILD_DIR}/dictup
 SOURCE_MAIN_NAME=./cmd/dictup/main.go
-SWAGGER_SCAN=./internal/app/app.go
+SWAGGER_SCAN=./internal/server/server.go
 
 build:
 	go build -o ${BINARY_NAME} ${SOURCE_MAIN_NAME}
 
 run:
+	go run ${SOURCE_MAIN_NAME}
+
+run-swag: swagger
 	go run ${SOURCE_MAIN_NAME}
 
 compile:

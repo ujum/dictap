@@ -38,6 +38,9 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Users"
+                ],
                 "summary": "List users",
                 "responses": {
                     "200": {
@@ -64,6 +67,9 @@ var doc = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Users"
                 ],
                 "summary": "Create user",
                 "parameters": [
@@ -96,6 +102,9 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Users"
+                ],
                 "summary": "User info",
                 "parameters": [
                     {
@@ -125,6 +134,9 @@ var doc = `{
                 "description": "Update user",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Users"
                 ],
                 "summary": "Update user",
                 "parameters": [
@@ -161,6 +173,9 @@ var doc = `{
                 "description": "Delete user",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Users"
                 ],
                 "summary": "Delete user",
                 "parameters": [

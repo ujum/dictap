@@ -69,6 +69,8 @@ paths:
           schema:
             $ref: '#/definitions/v1.errResponse'
       summary: List users
+      tags:
+      - Users
     post:
       consumes:
       - application/json
@@ -90,6 +92,8 @@ paths:
           schema:
             $ref: '#/definitions/v1.errResponse'
       summary: Create user
+      tags:
+      - Users
   /users/{uid}:
     delete:
       description: Delete user
@@ -109,6 +113,8 @@ paths:
           schema:
             $ref: '#/definitions/v1.errResponse'
       summary: Delete user
+      tags:
+      - Users
     get:
       description: Get user info
       parameters:
@@ -129,6 +135,8 @@ paths:
           schema:
             $ref: '#/definitions/v1.errResponse'
       summary: User info
+      tags:
+      - Users
     put:
       description: Update user
       parameters:
@@ -153,4 +161,6 @@ paths:
           schema:
             $ref: '#/definitions/v1.errResponse'
       summary: Update user
+      tags:
+      - Users
 swagger: "2.0"

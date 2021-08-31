@@ -9,6 +9,7 @@ import (
 
 // userInfo godoc
 // @Summary User info
+// @Tags Users
 // @Description Get user info
 // @Produce  json
 // @Param uid path string true "search by uid"
@@ -33,6 +34,7 @@ func (handler *Handler) userInfo(ctx iris.Context) {
 
 // getAllUsers godoc
 // @Summary List users
+// @Tags Users
 // @Description get all users
 // @Produce  json
 // @Success 200 {array} dto.User
@@ -55,6 +57,7 @@ func (handler *Handler) getAllUsers(ctx iris.Context) {
 
 // createUser godoc
 // @Summary Create user
+// @Tags Users
 // @Description Create new user
 // @Accept  json
 // @Produce  json
@@ -75,6 +78,7 @@ func (handler *Handler) createUser(ctx iris.Context) {
 
 // updateUser godoc
 // @Summary Update user
+// @Tags Users
 // @Description Update user
 // @Produce  json
 // @Param uid path string true "update by uid"
@@ -102,6 +106,7 @@ func (handler *Handler) updateUser(ctx iris.Context) {
 
 // deleteUser godoc
 // @Summary Delete user
+// @Tags Users
 // @Description Delete user
 // @Produce  json
 // @Param uid path string true "delete by uid"
