@@ -19,11 +19,13 @@ type UserRepo interface {
 
 type UserRepoMongo struct {
 	collection *mongo.Collection
+	log        logger.Logger
 }
 
 func NewUserRepoMongo(cfg *config.Config, log logger.Logger, collection *mongo.Collection) *UserRepoMongo {
 	return &UserRepoMongo{
 		collection: collection,
+		log:        log,
 	}
 }
 
@@ -33,6 +35,7 @@ func (ur *UserRepoMongo) FindAll(ctx context.Context) ([]*domain.User, error) {
 
 	var users []*domain.User
 	if err != nil {
+		ur.log.Errorf("can't find all users, reason: %v", err)
 		return users, err
 	}
 	err = cursor.All(ctx, &users)
@@ -54,6 +57,7 @@ func (ur *UserRepoMongo) FindByUid(ctx context.Context, uid string) (*domain.Use
 func (ur *UserRepoMongo) Update(ctx context.Context, user *domain.User) error {
 	result, err := ur.collection.UpdateOne(ctx, bson.M{"uid": user.Uid}, bson.M{"$set": user})
 	if err != nil {
+		ur.log.Errorf("can't update user, reason: %v", err)
 		return err
 	}
 	if result.MatchedCount == 0 {
@@ -73,6 +77,7 @@ func (ur *UserRepoMongo) Create(ctx context.Context, user *domain.User) error {
 func (ur *UserRepoMongo) DeleteByUid(ctx context.Context, uid string) error {
 	result, err := ur.collection.DeleteOne(ctx, bson.M{"uid": uid})
 	if err != nil {
+		ur.log.Errorf("can't delete user, reason: %v", err)
 		return err
 	}
 	if result.DeletedCount == 0 {

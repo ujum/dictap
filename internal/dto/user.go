@@ -18,3 +18,8 @@ type UserCreate struct {
 	User
 	Password string `json:"password"`
 }
+
+type UserCredentials struct {
+	Username string `json:"username,required"`
+	Password string ` json:"password,required"`
+}

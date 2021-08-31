@@ -1,5 +1,12 @@
-basePath: /api/v1
+basePath: /
 definitions:
+  dto.TokenDTO:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   dto.User:
     properties:
       email:
@@ -22,6 +29,13 @@ definitions:
       phone:
         type: string
       uid:
+        type: string
+    type: object
+  dto.UserCredentials:
+    properties:
+      password:
+        type: string
+      username:
         type: string
     type: object
   dto.UserUpdate:
@@ -52,7 +66,7 @@ info:
   title: Swagger API
   version: "1.0"
 paths:
-  /users:
+  /api/v1/users:
     get:
       description: get all users
       produces:
@@ -68,6 +82,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
       summary: List users
       tags:
       - Users
@@ -91,10 +107,12 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Create user
       tags:
       - Users
-  /users/{uid}:
+  /api/v1/users/{uid}:
     delete:
       description: Delete user
       parameters:
@@ -112,6 +130,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Delete user
       tags:
       - Users
@@ -134,6 +154,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
       summary: User info
       tags:
       - Users
@@ -160,7 +182,61 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Update user
       tags:
       - Users
+  /auth:
+    post:
+      description: Generate access and refresh token
+      parameters:
+      - description: User credentials
+        in: body
+        name: tokenRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserCredentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TokenDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      summary: Create new token pair
+      tags:
+      - Token
+  /refresh:
+    post:
+      description: Generate access and refresh token by refresh token
+      parameters:
+      - description: refresh token
+        in: query
+        name: refresh_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TokenDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      summary: Generate new token pair by refresh token
+      tags:
+      - Token
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

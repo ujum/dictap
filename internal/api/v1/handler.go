@@ -6,7 +6,7 @@ import (
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/middleware/requestid"
-	_ "github.com/ujum/dictap/docs"
+	_ "github.com/ujum/dictap/api"
 	"github.com/ujum/dictap/internal/config"
 	"github.com/ujum/dictap/internal/service"
 	"github.com/ujum/dictap/pkg/logger"
@@ -33,14 +33,19 @@ func (handler *Handler) RegisterRoutes(app *iris.Application) {
 }
 
 func (handler *Handler) routeV1(app *iris.Application) {
-	v1Group := app.Party("/api/v1")
+	app.Post("/auth", handler.auth)
+	app.Post("/refresh", handler.refresh)
+
+	v1Group := app.Party("/api/v1", handler.services.TokenService.VerifyHandler())
 	{
 		userGroup := v1Group.Party("/users")
-		userGroup.Get("/", handler.getAllUsers)
-		userGroup.Get("/{uid}", handler.userInfo)
-		userGroup.Post("/", handler.createUser)
-		userGroup.Put("/{uid}", handler.updateUser)
-		userGroup.Delete("/{uid}", handler.deleteUser)
+		{
+			userGroup.Get("/", handler.getAllUsers)
+			userGroup.Get("/{uid}", handler.userInfo)
+			userGroup.Post("/", handler.createUser)
+			userGroup.Put("/{uid}", handler.updateUser)
+			userGroup.Delete("/{uid}", handler.deleteUser)
+		}
 	}
 }
 

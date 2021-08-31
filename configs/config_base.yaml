@@ -5,6 +5,10 @@ logger:
 server:
   host: localhost
   port: 8080
+  security:
+    apiKeyAuth:
+      accessTokenMaxAgeMin: 30
+      refreshTokenMaxAgeMin: 60
 datasource:
   mongo:
     host: localhost

@@ -35,4 +35,4 @@ check-swagger:
 	which swag || (go get -u github.com/swaggo/swag/cmd/swag)
 
 swagger:
-	swag init -g ${SWAGGER_SCAN} -o ./docs
+	swag init -g ${SWAGGER_SCAN} -o ./api

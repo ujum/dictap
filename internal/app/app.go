@@ -61,7 +61,7 @@ func createDependencies(ctx context.Context, cfg *config.Config, appLogger logge
 		return service.NewDeps(appLogger, clients, nil, nil), err
 	}
 	repos := repo.New(cfg, appLogger, clients)
-	services := service.NewServices(appLogger, repos)
+	services := service.NewServices(cfg, appLogger, repos)
 	return service.NewDeps(appLogger, clients, repos, services), nil
 }
 

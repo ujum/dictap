@@ -12,3 +12,7 @@ type errResponse struct {
 func serverErrorResponse(ctx iris.Context, err error) {
 	ctx.StopWithJSON(http.StatusInternalServerError, &errResponse{Message: err.Error()})
 }
+
+func badRequestResponse(ctx iris.Context, err error) {
+	ctx.StopWithJSON(http.StatusBadRequest, &errResponse{Message: err.Error()})
+}

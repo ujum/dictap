@@ -2,12 +2,14 @@ package service
 
 import (
 	"github.com/ujum/dictap/internal/client"
+	"github.com/ujum/dictap/internal/config"
 	"github.com/ujum/dictap/internal/repo"
 	"github.com/ujum/dictap/pkg/logger"
 )
 
 type Services struct {
-	UserService UserService
+	UserService  UserService
+	TokenService TokenService
 }
 
 type Deps struct {
@@ -17,12 +19,12 @@ type Deps struct {
 	Services *Services
 }
 
-func NewServices(appLogger logger.Logger, repos *repo.Repositories) *Services {
+func NewServices(cfg *config.Config, appLogger logger.Logger, repos *repo.Repositories) *Services {
+	userService := newUserService(repos, appLogger)
+	jwtTokenService := NewJwtTokenService(cfg, appLogger, userService)
 	return &Services{
-		UserService: &UserServiceImpl{
-			userRepo: repos.UserRepo,
-			logger:   appLogger,
-		},
+		UserService:  userService,
+		TokenService: jwtTokenService,
 	}
 }
 

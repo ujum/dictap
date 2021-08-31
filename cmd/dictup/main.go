@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-const configDir = "configs"
+const configDir = "./configs"
 
 func main() {
 	path := configPath()

@@ -11,14 +11,25 @@ const (
 )
 
 type Config struct {
+	ConfigDir  string
 	Server     *ServerConfig
 	Logger     *LoggerConfig
 	Datasource *DatasourceConfig
 }
 
+type SecurityConfig struct {
+	ApiKeyAuth *ApiKeyAuthConfig
+}
+
+type ApiKeyAuthConfig struct {
+	AccessTokenMaxAgeMin  int
+	RefreshTokenMaxAgeMin int
+}
+
 type ServerConfig struct {
-	Host string
-	Port int
+	Host     string
+	Port     int
+	Security *SecurityConfig
 }
 
 type LoggerConfig struct {
@@ -47,5 +58,6 @@ func New(configDir string) (*Config, error) {
 		EnvPrefix: envPrefix,
 	}
 	err := loader.Load(appConfig, settings)
+	appConfig.ConfigDir = configDir
 	return appConfig, err
 }

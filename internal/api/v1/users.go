@@ -15,7 +15,8 @@ import (
 // @Param uid path string true "search by uid"
 // @Success 200 {object} dto.User
 // @Failure 404 {object} errResponse
-// @Router /users/{uid} [get]
+// @Security ApiKeyAuth
+// @Router /api/v1/users/{uid} [get]
 func (handler *Handler) userInfo(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
 	user, err := handler.services.UserService.GetByUid(ctx.Request().Context(), uid)
@@ -39,7 +40,8 @@ func (handler *Handler) userInfo(ctx iris.Context) {
 // @Produce  json
 // @Success 200 {array} dto.User
 // @Failure 404 {object} errResponse
-// @Router /users [get]
+// @Security ApiKeyAuth
+// @Router /api/v1/users [get]
 func (handler *Handler) getAllUsers(ctx iris.Context) {
 	users, err := handler.services.UserService.GetAll(ctx.Request().Context())
 	if err != nil {
@@ -64,7 +66,8 @@ func (handler *Handler) getAllUsers(ctx iris.Context) {
 // @Param user body dto.UserCreate true "Create user"
 // @Success 200
 // @Failure 400 {object} errResponse
-// @Router /users [post]
+// @Security ApiKeyAuth
+// @Router /api/v1/users [post]
 func (handler *Handler) createUser(ctx iris.Context) {
 	user := &dto.UserCreate{}
 	if err := ctx.ReadJSON(user); err != nil {
@@ -85,7 +88,8 @@ func (handler *Handler) createUser(ctx iris.Context) {
 // @Param user body dto.UserUpdate true "update user"
 // @Success 200
 // @Failure 404 {object} errResponse
-// @Router /users/{uid} [put]
+// @Security ApiKeyAuth
+// @Router /api/v1/users/{uid} [put]
 func (handler *Handler) updateUser(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
 
@@ -112,7 +116,8 @@ func (handler *Handler) updateUser(ctx iris.Context) {
 // @Param uid path string true "delete by uid"
 // @Success 200
 // @Failure 404 {object} errResponse
-// @Router /users/{uid} [delete]
+// @Security ApiKeyAuth
+// @Router /api/v1/users/{uid} [delete]
 func (handler *Handler) deleteUser(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
 	err := handler.services.UserService.DeleteByUid(ctx.Request().Context(), uid)

@@ -5,6 +5,11 @@ func defaultValue() *Config {
 		Server: &ServerConfig{
 			Host: "localhost",
 			Port: 8080,
+			Security: &SecurityConfig{
+				ApiKeyAuth: &ApiKeyAuthConfig{
+					AccessTokenMaxAgeMin:  30,
+					RefreshTokenMaxAgeMin: 60,
+				}},
 		},
 		Datasource: &DatasourceConfig{
 			Mongo: &MongoDatasourceConfig{
