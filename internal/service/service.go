@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/kataras/iris/v12/middleware/jwt"
 	"github.com/ujum/dictap/internal/client"
 	"github.com/ujum/dictap/internal/config"
 	"github.com/ujum/dictap/internal/repo"
@@ -10,6 +11,7 @@ import (
 type Services struct {
 	UserService  UserService
 	TokenService TokenService
+	JwtVerifier  *jwt.Verifier
 }
 
 type Deps struct {
@@ -19,13 +21,23 @@ type Deps struct {
 	Services *Services
 }
 
-func NewServices(cfg *config.Config, appLogger logger.Logger, repos *repo.Repositories) *Services {
+func NewServices(cfg *config.Config, appLogger logger.Logger, repos *repo.Repositories) (*Services, error) {
 	userService := newUserService(repos, appLogger)
-	jwtTokenService := NewJwtTokenService(cfg, appLogger, userService)
+	verifier, err := NewJwtVerifier(cfg)
+	if err != nil {
+		return nil, err
+	}
+	signer, err := NewJwtSigner(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	jwtTokenService := NewJwtTokenService(cfg, appLogger, verifier, signer, userService)
 	return &Services{
 		UserService:  userService,
 		TokenService: jwtTokenService,
-	}
+		JwtVerifier:  verifier,
+	}, nil
 }
 
 func NewDeps(appLogger logger.Logger, clients *client.Clients, repos *repo.Repositories, services *Services) *Deps {

@@ -16,15 +16,11 @@ import (
 // @Failure 400 {object} errResponse
 // @Router /auth [post]
 func (handler *Handler) auth(ctx iris.Context) {
-
 	credentials := &dto.UserCredentials{}
-
 	err := ctx.ReadJSON(credentials)
-
 	tokens, err := handler.services.TokenService.Generate(ctx.Request().Context(), credentials)
 	if err != nil {
-		ctx.StopWithError(http.StatusUnauthorized, err)
-
+		ctx.StopWithJSON(http.StatusUnauthorized, &errResponse{Message: err.Error()})
 		return
 	}
 	ctx.StopWithJSON(http.StatusOK, tokens)

@@ -9,13 +9,14 @@ import (
 	"github.com/ujum/dictap/internal/domain"
 	"github.com/ujum/dictap/internal/dto"
 	"github.com/ujum/dictap/pkg/logger"
+	"net/http"
 	"time"
 )
 
 type TokenService interface {
 	Generate(requestCtx ctx.Context, credentials *dto.UserCredentials) (*dto.TokenDTO, error)
 	Refresh(requestCtx ctx.Context, refreshToken json.RawMessage) (*dto.TokenDTO, error)
-	VerifyHandler() context.Handler
+	GetClaimsTypeVerifyFunc() func() interface{}
 }
 
 type JwtTokenService struct {
@@ -31,14 +32,31 @@ type userClaims struct {
 	App string `json:"app"`
 }
 
-func NewJwtTokenService(cfg *config.Config, appLogger logger.Logger, userService UserService) *JwtTokenService {
+func NewJwtSigner(cfg *config.Config) (*jwt.Signer, error) {
+	privateKeyRSA, err := jwt.LoadPrivateKeyRSA(cfg.ConfigDir + "/rsa_private_key.pem")
+	if err != nil {
+		return nil, err
+	}
 	min := cfg.Server.Security.ApiKeyAuth.AccessTokenMaxAgeMin
-	privateKey, publicKey := jwt.MustLoadRSA(cfg.ConfigDir+"/rsa_private_key.pem", cfg.ConfigDir+"/rsa_public_key.pem")
-	signer := jwt.NewSigner(jwt.RS256, privateKey, time.Duration(min)*time.Minute)
+	signer := jwt.NewSigner(jwt.RS256, privateKeyRSA, time.Duration(min)*time.Minute)
+	return signer, err
+}
 
-	verifier := jwt.NewVerifier(jwt.RS256, publicKey)
+func NewJwtVerifier(cfg *config.Config) (*jwt.Verifier, error) {
+	publicKeyRSA, err := jwt.LoadPublicKeyRSA(cfg.ConfigDir + "/rsa_public_key.pem")
+	if err != nil {
+		return nil, err
+	}
+	verifier := jwt.NewVerifier(jwt.RS256, publicKeyRSA)
 	verifier.WithDefaultBlocklist()
+	verifier.ErrorHandler = func(ctx *context.Context, err error) {
+		ctx.StopWithJSON(http.StatusUnauthorized, map[string]string{"message": err.Error()})
+	}
+	return verifier, nil
+}
 
+func NewJwtTokenService(cfg *config.Config, appLogger logger.Logger,
+	verifier *jwt.Verifier, signer *jwt.Signer, userService UserService) *JwtTokenService {
 	tokenService := &JwtTokenService{
 		log:         appLogger,
 		cfg:         cfg,
@@ -58,7 +76,7 @@ func (tokenSrv *JwtTokenService) Generate(requestCtx ctx.Context, credentials *d
 }
 
 func (tokenSrv *JwtTokenService) Refresh(requestCtx ctx.Context, refreshToken json.RawMessage) (*dto.TokenDTO, error) {
-	verifiedToken, err := tokenSrv.verifier.VerifyToken(refreshToken /*, jwt.Expected{Subject: currentUserID}*/)
+	verifiedToken, err := tokenSrv.verifier.VerifyToken(refreshToken)
 	if err != nil {
 		tokenSrv.log.Errorf("verify refresh token: %v", err)
 		return nil, err
@@ -89,8 +107,8 @@ func (tokenSrv *JwtTokenService) generate(user *domain.User) (*dto.TokenDTO, err
 	}, nil
 }
 
-func (tokenSrv *JwtTokenService) VerifyHandler() context.Handler {
-	return tokenSrv.verifier.Verify(func() interface{} {
+func (tokenSrv *JwtTokenService) GetClaimsTypeVerifyFunc() func() interface{} {
+	return func() interface{} {
 		return new(userClaims)
-	})
+	}
 }

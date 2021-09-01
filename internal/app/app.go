@@ -61,13 +61,16 @@ func createDependencies(ctx context.Context, cfg *config.Config, appLogger logge
 		return service.NewDeps(appLogger, clients, nil, nil), err
 	}
 	repos := repo.New(cfg, appLogger, clients)
-	services := service.NewServices(cfg, appLogger, repos)
+	services, err := service.NewServices(cfg, appLogger, repos)
+	if err != nil {
+		return service.NewDeps(appLogger, clients, repos, services), err
+	}
 	return service.NewDeps(appLogger, clients, repos, services), nil
 }
 
 func listenStopSignals(ctx context.Context, cancel context.CancelFunc, srv *server.Server, deps *service.Deps) {
 	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGSTOP)
+	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT)
 	select {
 	case <-ctx.Done():
 		deps.Logger.Debug("root context has been closed. Stopping server...")

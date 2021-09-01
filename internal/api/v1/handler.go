@@ -36,7 +36,8 @@ func (handler *Handler) routeV1(app *iris.Application) {
 	app.Post("/auth", handler.auth)
 	app.Post("/refresh", handler.refresh)
 
-	v1Group := app.Party("/api/v1", handler.services.TokenService.VerifyHandler())
+	tokenVerifyHandler := handler.services.JwtVerifier.Verify(handler.services.TokenService.GetClaimsTypeVerifyFunc())
+	v1Group := app.Party("/api/v1", tokenVerifyHandler)
 	{
 		userGroup := v1Group.Party("/users")
 		{
@@ -50,7 +51,7 @@ func (handler *Handler) routeV1(app *iris.Application) {
 }
 
 func (handler *Handler) routeSwagger(app *iris.Application) {
-	protocol := "http"
+	const protocol = "http"
 	hostPort := fmt.Sprintf("%s:%d", handler.config.Host, handler.config.Port)
 	url := protocol + "://" + hostPort + "/swagger/doc.json"
 
