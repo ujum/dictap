@@ -12,7 +12,7 @@ import (
 
 type UserService interface {
 	GetByUid(ctx context.Context, uid string) (*domain.User, error)
-	Create(ctx context.Context, user *dto.UserCreate) error
+	Create(ctx context.Context, user *dto.UserCreate) (string, error)
 	Update(ctx context.Context, user *dto.UserUpdate) error
 	GetAll(ctx context.Context) ([]*domain.User, error)
 	DeleteByUid(ctx context.Context, uid string) error
@@ -53,19 +53,19 @@ func (us *UserServiceImpl) GetByCredentials(ctx context.Context, credentials *dt
 	return user, nil
 }
 
-func (us *UserServiceImpl) Create(ctx context.Context, userDTO *dto.UserCreate) error {
+func (us *UserServiceImpl) Create(ctx context.Context, userDTO *dto.UserCreate) (string, error) {
 	existingUser, _ := us.GetByUid(ctx, userDTO.Uid)
 	if existingUser != nil {
-		return domain.ErrUserAlreadyExists
+		return "", domain.ErrUserAlreadyExists
 	}
 	password, err := us.passHashService.HashPassword(userDTO.Password)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	user := &domain.User{}
 	if err := copier.CopyWithOption(user, userDTO, copier.Option{}); err != nil {
-		return err
+		return "", err
 	}
 	user.Password = password
 	user.RegisteredAt = time.Now()

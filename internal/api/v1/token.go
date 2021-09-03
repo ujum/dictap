@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/kataras/iris/v12"
+	"github.com/ujum/dictap/internal/api"
 	"github.com/ujum/dictap/internal/dto"
 	"net/http"
 )
@@ -18,7 +19,7 @@ import (
 func (handler *Handler) auth(ctx iris.Context) {
 	credentials := &dto.UserCredentials{}
 	err := ctx.ReadJSON(credentials)
-	tokens, err := handler.services.TokenService.Generate(ctx.Request().Context(), credentials)
+	tokens, err := handler.services.TokenService.Generate(api.RequestContext(ctx), credentials)
 	if err != nil {
 		ctx.StopWithJSON(http.StatusUnauthorized, &errResponse{Message: err.Error()})
 		return
@@ -41,7 +42,7 @@ func (handler *Handler) refresh(ctx iris.Context) {
 		ctx.StopWithStatus(http.StatusBadRequest)
 		return
 	}
-	tokens, err := handler.services.TokenService.Refresh(ctx.Request().Context(), refreshToken)
+	tokens, err := handler.services.TokenService.Refresh(api.RequestContext(ctx), refreshToken)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return

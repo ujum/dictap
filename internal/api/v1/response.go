@@ -9,6 +9,14 @@ type errResponse struct {
 	Message string `json:"message"`
 }
 
+type createResponse struct {
+	ID string `json:"id"`
+}
+
+func createdResponse(ctx iris.Context, id string) {
+	ctx.StopWithJSON(http.StatusAccepted, &createResponse{ID: id})
+}
+
 func serverErrorResponse(ctx iris.Context, err error) {
 	ctx.StopWithJSON(http.StatusInternalServerError, &errResponse{Message: err.Error()})
 }

@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"github.com/ujum/dictap/internal/api"
 	"github.com/ujum/dictap/internal/dto"
 	"net/http"
 )
@@ -12,19 +13,32 @@ import (
 // @Tags Users
 // @Description Get user info
 // @Produce  json
-// @Param uid path string true "search by uid"
+// @Param uid path string true "user uid"
 // @Success 200 {object} dto.User
 // @Failure 404 {object} errResponse
 // @Security ApiKeyAuth
 // @Router /api/v1/users/{uid} [get]
 func (handler *Handler) userInfo(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
-	user, err := handler.services.UserService.GetByUid(ctx.Request().Context(), uid)
+
+	if uid == "current" {
+		currentUser, err := api.GetCurrentUser(ctx)
+		if err != nil {
+			badRequestResponse(ctx, err)
+			return
+		}
+		username, err := currentUser.GetUsername()
+		if err != nil {
+			badRequestResponse(ctx, err)
+			return
+		}
+		uid = username
+	}
+	user, err := handler.services.UserService.GetByUid(api.RequestContext(ctx), uid)
 	if err != nil {
 		ctx.StopWithJSON(http.StatusNotFound, errResponse{Message: err.Error()})
 		return
 	}
-
 	userDTO := &dto.User{}
 	if err = copier.Copy(userDTO, user); err != nil {
 		serverErrorResponse(ctx, err)
@@ -36,14 +50,14 @@ func (handler *Handler) userInfo(ctx iris.Context) {
 // getAllUsers godoc
 // @Summary List users
 // @Tags Users
-// @Description get all users
+// @Description Get all users
 // @Produce  json
 // @Success 200 {array} dto.User
 // @Failure 404 {object} errResponse
 // @Security ApiKeyAuth
 // @Router /api/v1/users [get]
 func (handler *Handler) getAllUsers(ctx iris.Context) {
-	users, err := handler.services.UserService.GetAll(ctx.Request().Context())
+	users, err := handler.services.UserService.GetAll(api.RequestContext(ctx))
 	if err != nil {
 		serverErrorResponse(ctx, err)
 		return
@@ -74,9 +88,11 @@ func (handler *Handler) createUser(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
-	if err := handler.services.UserService.Create(ctx.Request().Context(), user); err != nil {
+	userID, err := handler.services.UserService.Create(api.RequestContext(ctx), user)
+	if err := err; err != nil {
 		ctx.StopWithJSON(http.StatusBadRequest, &errResponse{Message: err.Error()})
 	}
+	createdResponse(ctx, userID)
 }
 
 // updateUser godoc
@@ -100,7 +116,7 @@ func (handler *Handler) updateUser(ctx iris.Context) {
 	}
 
 	user.Uid = uid
-	err := handler.services.UserService.Update(ctx.Request().Context(), user)
+	err := handler.services.UserService.Update(api.RequestContext(ctx), user)
 	if err != nil {
 		ctx.StopWithJSON(http.StatusNotFound, errResponse{Message: err.Error()})
 		return
@@ -120,7 +136,7 @@ func (handler *Handler) updateUser(ctx iris.Context) {
 // @Router /api/v1/users/{uid} [delete]
 func (handler *Handler) deleteUser(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
-	err := handler.services.UserService.DeleteByUid(ctx.Request().Context(), uid)
+	err := handler.services.UserService.DeleteByUid(api.RequestContext(ctx), uid)
 	if err != nil {
 		ctx.StopWithJSON(http.StatusNotFound, errResponse{Message: err.Error()})
 		return

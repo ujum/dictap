@@ -16,7 +16,6 @@ import (
 type TokenService interface {
 	Generate(requestCtx ctx.Context, credentials *dto.UserCredentials) (*dto.TokenDTO, error)
 	Refresh(requestCtx ctx.Context, refreshToken json.RawMessage) (*dto.TokenDTO, error)
-	GetClaimsTypeVerifyFunc() func() interface{}
 }
 
 type JwtTokenService struct {
@@ -27,12 +26,7 @@ type JwtTokenService struct {
 	userService UserService
 }
 
-type userClaims struct {
-	Uid string `json:"uid,required"`
-	App string `json:"app"`
-}
-
-func NewJwtSigner(cfg *config.Config) (*jwt.Signer, error) {
+func newJwtSigner(cfg *config.Config) (*jwt.Signer, error) {
 	privateKeyRSA, err := jwt.LoadPrivateKeyRSA(cfg.ConfigDir + "/rsa_private_key.pem")
 	if err != nil {
 		return nil, err
@@ -42,7 +36,7 @@ func NewJwtSigner(cfg *config.Config) (*jwt.Signer, error) {
 	return signer, err
 }
 
-func NewJwtVerifier(cfg *config.Config) (*jwt.Verifier, error) {
+func newJwtVerifier(cfg *config.Config) (*jwt.Verifier, error) {
 	publicKeyRSA, err := jwt.LoadPublicKeyRSA(cfg.ConfigDir + "/rsa_public_key.pem")
 	if err != nil {
 		return nil, err
@@ -55,7 +49,7 @@ func NewJwtVerifier(cfg *config.Config) (*jwt.Verifier, error) {
 	return verifier, nil
 }
 
-func NewJwtTokenService(cfg *config.Config, appLogger logger.Logger,
+func newJwtTokenService(cfg *config.Config, appLogger logger.Logger,
 	verifier *jwt.Verifier, signer *jwt.Signer, userService UserService) *JwtTokenService {
 	tokenService := &JwtTokenService{
 		log:         appLogger,
@@ -91,9 +85,12 @@ func (tokenSrv *JwtTokenService) Refresh(requestCtx ctx.Context, refreshToken js
 
 func (tokenSrv *JwtTokenService) generate(user *domain.User) (*dto.TokenDTO, error) {
 	refreshClaims := jwt.Claims{Subject: user.Uid}
-	accessClaims := userClaims{
-		Uid: user.Uid,
-		App: "Dictup",
+	accessClaims := &context.SimpleUser{
+		Authorization: "Bearer",
+		AuthorizedAt:  time.Now(),
+		ID:            user.ID,
+		Username:      user.Uid,
+		Fields:        map[string]interface{}{"app": "dictup"},
 	}
 	refreshMin := tokenSrv.cfg.Server.Security.ApiKeyAuth.RefreshTokenMaxAgeMin
 	tokenPair, err := tokenSrv.signer.NewTokenPair(accessClaims, refreshClaims, time.Duration(refreshMin)*time.Minute)
@@ -105,10 +102,4 @@ func (tokenSrv *JwtTokenService) generate(user *domain.User) (*dto.TokenDTO, err
 		AccessToken:  tokenPair.AccessToken,
 		RefreshToken: tokenPair.RefreshToken,
 	}, nil
-}
-
-func (tokenSrv *JwtTokenService) GetClaimsTypeVerifyFunc() func() interface{} {
-	return func() interface{} {
-		return new(userClaims)
-	}
 }

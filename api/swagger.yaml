@@ -47,6 +47,43 @@ definitions:
       phone:
         type: string
     type: object
+  dto.Word:
+    properties:
+      added_at:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.WordCreate:
+    properties:
+      group_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.WordGroup:
+    properties:
+      id:
+        type: string
+      lang_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.WordGroupCreate:
+    properties:
+      lang_id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.WordGroupMovement:
+    properties:
+      from_group_id:
+        type: string
+      to_group_id:
+        type: string
+    type: object
   v1.errResponse:
     properties:
       message:
@@ -68,7 +105,7 @@ info:
 paths:
   /api/v1/users:
     get:
-      description: get all users
+      description: Get all users
       produces:
       - application/json
       responses:
@@ -138,7 +175,7 @@ paths:
     get:
       description: Get user info
       parameters:
-      - description: search by uid
+      - description: user uid
         in: path
         name: uid
         required: true
@@ -187,6 +224,246 @@ paths:
       summary: Update user
       tags:
       - Users
+  /api/v1/wordgroups:
+    post:
+      consumes:
+      - application/json
+      description: Create new word group
+      parameters:
+      - description: Word Group
+        in: body
+        name: word
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WordGroupCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create word group
+      tags:
+      - WordGroups
+  /api/v1/wordgroups/{gid}:
+    get:
+      description: Get word group by id
+      parameters:
+      - description: group id
+        in: path
+        name: gid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WordGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Word group by id
+      tags:
+      - WordGroups
+  /api/v1/wordgroups/default/{lid}:
+    get:
+      description: Get word group by language
+      parameters:
+      - description: lang id
+        in: path
+        name: lid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WordGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get default word group by language
+      tags:
+      - WordGroups
+  /api/v1/wordgroups/langs/{lid}:
+    get:
+      description: Get all word groups
+      parameters:
+      - description: language id
+        in: path
+        name: lid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.WordGroup'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List word groups
+      tags:
+      - WordGroups
+  /api/v1/words:
+    post:
+      consumes:
+      - application/json
+      description: Create new word
+      parameters:
+      - description: Word
+        in: body
+        name: word
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WordCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create word
+      tags:
+      - Words
+  /api/v1/words/{name}/groups:
+    post:
+      description: Move word to group
+      parameters:
+      - description: word name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Word Group Movement
+        in: body
+        name: move
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WordGroupMovement'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Move word to group
+      tags:
+      - Words
+  /api/v1/words/{name}/groups/{gid}:
+    delete:
+      description: Remove word from group
+      parameters:
+      - description: word name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: group id
+        in: path
+        name: gid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove word from group
+      tags:
+      - Words
+    post:
+      description: Add word to group
+      parameters:
+      - description: word name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: group id
+        in: path
+        name: gid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add word to group
+      tags:
+      - Words
+  /api/v1/words/groups/{gid}:
+    get:
+      description: Get words by group
+      parameters:
+      - description: group id
+        in: path
+        name: gid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Word'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: List words by group
+      tags:
+      - Words
   /auth:
     post:
       description: Generate access and refresh token

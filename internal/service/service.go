@@ -9,9 +9,11 @@ import (
 )
 
 type Services struct {
-	UserService  UserService
-	TokenService TokenService
-	JwtVerifier  *jwt.Verifier
+	UserService      UserService
+	TokenService     TokenService
+	JwtVerifier      *jwt.Verifier
+	WordService      WordService
+	WordGroupService WordGroupService
 }
 
 type Deps struct {
@@ -23,20 +25,26 @@ type Deps struct {
 
 func NewServices(cfg *config.Config, appLogger logger.Logger, repos *repo.Repositories) (*Services, error) {
 	userService := newUserService(repos, appLogger)
-	verifier, err := NewJwtVerifier(cfg)
+	verifier, err := newJwtVerifier(cfg)
 	if err != nil {
 		return nil, err
 	}
-	signer, err := NewJwtSigner(cfg)
+	signer, err := newJwtSigner(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	jwtTokenService := NewJwtTokenService(cfg, appLogger, verifier, signer, userService)
+	jwtTokenService := newJwtTokenService(cfg, appLogger, verifier, signer, userService)
+
+	wordGroupService := newWordGroupService(repos, appLogger)
+	wordService := newWordService(repos, appLogger)
+
 	return &Services{
-		UserService:  userService,
-		TokenService: jwtTokenService,
-		JwtVerifier:  verifier,
+		UserService:      userService,
+		TokenService:     jwtTokenService,
+		JwtVerifier:      verifier,
+		WordService:      wordService,
+		WordGroupService: wordGroupService,
 	}, nil
 }
 

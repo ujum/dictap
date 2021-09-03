@@ -1,4 +1,4 @@
-package repo
+package mongo
 
 import (
 	"context"
@@ -8,14 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
-type UserRepo interface {
-	FindByUid(ctx context.Context, uid string) (*domain.User, error)
-	Create(ctx context.Context, user *domain.User) error
-	FindAll(ctx context.Context) ([]*domain.User, error)
-	DeleteByUid(ctx context.Context, uid string) error
-	Update(ctx context.Context, user *domain.User) error
-}
 
 type UserRepoMongo struct {
 	collection *mongo.Collection
@@ -31,13 +23,13 @@ func NewUserRepoMongo(cfg *config.Config, log logger.Logger, collection *mongo.C
 
 func (ur *UserRepoMongo) FindAll(ctx context.Context) ([]*domain.User, error) {
 	cursor, err := ur.collection.Find(ctx, bson.D{})
-	defer cursor.Close(ctx)
 
 	var users []*domain.User
 	if err != nil {
 		ur.log.Errorf("can't find all users, reason: %v", err)
 		return users, err
 	}
+	defer cursor.Close(ctx)
 	err = cursor.All(ctx, &users)
 	return users, err
 }
@@ -66,12 +58,12 @@ func (ur *UserRepoMongo) Update(ctx context.Context, user *domain.User) error {
 	return err
 }
 
-func (ur *UserRepoMongo) Create(ctx context.Context, user *domain.User) error {
-	_, err := ur.collection.InsertOne(ctx, user)
-	if mongo.IsDuplicateKeyError(err) {
-		return domain.ErrUserAlreadyExists
+func (ur *UserRepoMongo) Create(ctx context.Context, user *domain.User) (string, error) {
+	userID, err := create(ctx, ur.collection, user)
+	if err == domain.ErrAlreadyExists {
+		return userID, domain.ErrUserAlreadyExists
 	}
-	return err
+	return userID, err
 }
 
 func (ur *UserRepoMongo) DeleteByUid(ctx context.Context, uid string) error {

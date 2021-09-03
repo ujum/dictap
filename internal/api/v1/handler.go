@@ -5,6 +5,7 @@ import (
 	"github.com/iris-contrib/swagger/v12"
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/middleware/requestid"
 	_ "github.com/ujum/dictap/api"
 	"github.com/ujum/dictap/internal/config"
@@ -36,7 +37,10 @@ func (handler *Handler) routeV1(app *iris.Application) {
 	app.Post("/auth", handler.auth)
 	app.Post("/refresh", handler.refresh)
 
-	tokenVerifyHandler := handler.services.JwtVerifier.Verify(handler.services.TokenService.GetClaimsTypeVerifyFunc())
+	tokenVerifyHandler := handler.services.JwtVerifier.Verify(func() interface{} {
+		return new(context.SimpleUser)
+	})
+
 	v1Group := app.Party("/api/v1", tokenVerifyHandler)
 	{
 		userGroup := v1Group.Party("/users")
@@ -46,6 +50,22 @@ func (handler *Handler) routeV1(app *iris.Application) {
 			userGroup.Post("/", handler.createUser)
 			userGroup.Put("/{uid}", handler.updateUser)
 			userGroup.Delete("/{uid}", handler.deleteUser)
+		}
+		wordGroup := v1Group.Party("/words")
+		{
+			wordGroup.Get("/", handler.getAllUsers)
+			wordGroup.Get("/groups/{gid}", handler.wordsByGroup)
+			wordGroup.Post("/", handler.createWord)
+			wordGroup.Post("/{name}/groups/{gid}", handler.addWordToGroup)
+			wordGroup.Post("/{name}/groups", handler.moveWordToGroup)
+			wordGroup.Delete("/{name}/groups/{gid}", handler.removeWordFromGroup)
+		}
+		wordGroupGroup := v1Group.Party("/wordgroups")
+		{
+			wordGroupGroup.Get("/langs/{lid}", handler.getWordGroups)
+			wordGroupGroup.Post("/", handler.createWordGroup)
+			wordGroupGroup.Get("/{gid}", handler.getWordGroup)
+			wordGroupGroup.Get("/default/{lid}", handler.getDefaultWordGroup)
 		}
 	}
 }

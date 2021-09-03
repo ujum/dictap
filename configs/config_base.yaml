@@ -7,8 +7,8 @@ server:
   port: 8080
   security:
     apiKeyAuth:
-      accessTokenMaxAgeMin: 30
-      refreshTokenMaxAgeMin: 60
+      accessTokenMaxAgeMin: 3600
+      refreshTokenMaxAgeMin: 3601
 datasource:
   mongo:
     host: localhost
