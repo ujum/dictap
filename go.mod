@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.8.1
 	github.com/swaggo/swag v1.7.1
 	go.mongodb.org/mongo-driver v1.7.1
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/net v0.0.0-20210825183410-e898025ed96a // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
