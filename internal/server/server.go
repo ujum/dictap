@@ -47,7 +47,7 @@ type logWriter struct {
 }
 
 func (lw *logWriter) Write(p []byte) (n int, err error) {
-	lw.logger.Error(p)
+	lw.logger.Error(string(p))
 	return len(p), nil
 }
 
