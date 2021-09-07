@@ -17,16 +17,16 @@ type Word struct {
 
 type WordGroupMongo struct {
 	ID      primitive.ObjectID `bson:"_id,omitempty"`
-	UserID  primitive.ObjectID `bson:"user_id"`
-	Lang    primitive.ObjectID `bson:"lang_id"`
+	UserUID string             `bson:"user_uid"`
+	LangID  primitive.ObjectID `bson:"lang_id"`
 	Name    string             `bson:"name"`
 	Default bool               `bson:"default"`
 }
 
 type WordGroup struct {
 	ID      string `bson:"_id,omitempty"`
-	UserID  string `bson:"user_id"`
+	UserUID string `bson:"user_uid"`
 	Name    string `bson:"name"`
-	Lang    string `bson:"lang_id"`
+	LangID  string `bson:"lang_id"`
 	Default bool   `bson:"default"`
 }

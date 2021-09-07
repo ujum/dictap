@@ -34,7 +34,7 @@ func (handler *Handler) userInfo(ctx iris.Context) {
 		}
 		uid = username
 	}
-	user, err := handler.services.UserService.GetByUid(api.RequestContext(ctx), uid)
+	user, err := handler.services.UserService.GetByUID(api.RequestContext(ctx), uid)
 	if err != nil {
 		ctx.StopWithJSON(http.StatusNotFound, errResponse{Message: err.Error()})
 		return
@@ -88,11 +88,12 @@ func (handler *Handler) createUser(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
-	userID, err := handler.services.UserService.Create(api.RequestContext(ctx), user)
+	uid, err := handler.services.UserService.Create(api.RequestContext(ctx), user)
 	if err := err; err != nil {
 		ctx.StopWithJSON(http.StatusBadRequest, &errResponse{Message: err.Error()})
+		return
 	}
-	createdResponse(ctx, userID)
+	createdResponse(ctx, uid)
 }
 
 // updateUser godoc
@@ -114,8 +115,7 @@ func (handler *Handler) updateUser(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
-
-	user.Uid = uid
+	user.UID = uid
 	err := handler.services.UserService.Update(api.RequestContext(ctx), user)
 	if err != nil {
 		ctx.StopWithJSON(http.StatusNotFound, errResponse{Message: err.Error()})

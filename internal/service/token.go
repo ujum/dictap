@@ -15,6 +15,7 @@ import (
 
 type TokenService interface {
 	Generate(requestCtx ctx.Context, credentials *dto.UserCredentials) (*dto.TokenDTO, error)
+	GenerateForUser(user *domain.User) (*dto.TokenDTO, error)
 	Refresh(requestCtx ctx.Context, refreshToken json.RawMessage) (*dto.TokenDTO, error)
 }
 
@@ -66,7 +67,7 @@ func (tokenSrv *JwtTokenService) Generate(requestCtx ctx.Context, credentials *d
 	if err != nil {
 		return nil, err
 	}
-	return tokenSrv.generate(user)
+	return tokenSrv.GenerateForUser(user)
 }
 
 func (tokenSrv *JwtTokenService) Refresh(requestCtx ctx.Context, refreshToken json.RawMessage) (*dto.TokenDTO, error) {
@@ -75,21 +76,22 @@ func (tokenSrv *JwtTokenService) Refresh(requestCtx ctx.Context, refreshToken js
 		tokenSrv.log.Errorf("verify refresh token: %v", err)
 		return nil, err
 	}
-	uid, err := tokenSrv.userService.GetByUid(requestCtx, verifiedToken.StandardClaims.Subject)
+	user, err := tokenSrv.userService.GetByUID(requestCtx, verifiedToken.StandardClaims.Subject)
 	if err != nil {
 		return nil, err
 	}
 
-	return tokenSrv.generate(uid)
+	return tokenSrv.GenerateForUser(user)
 }
 
-func (tokenSrv *JwtTokenService) generate(user *domain.User) (*dto.TokenDTO, error) {
-	refreshClaims := jwt.Claims{Subject: user.Uid}
+func (tokenSrv *JwtTokenService) GenerateForUser(user *domain.User) (*dto.TokenDTO, error) {
+	refreshClaims := jwt.Claims{Subject: user.UID}
 	accessClaims := &context.SimpleUser{
 		Authorization: "Bearer",
 		AuthorizedAt:  time.Now(),
-		ID:            user.ID,
-		Username:      user.Uid,
+		ID:            user.UID,
+		Username:      user.Name,
+		Email:         user.Email,
 		Fields:        map[string]interface{}{"app": "dictup"},
 	}
 	refreshMin := tokenSrv.cfg.Server.Security.ApiKeyAuth.RefreshTokenMaxAgeMin

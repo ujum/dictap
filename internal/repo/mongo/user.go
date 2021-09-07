@@ -34,7 +34,7 @@ func (ur *UserRepoMongo) FindAll(ctx context.Context) ([]*domain.User, error) {
 	return users, err
 }
 
-func (ur *UserRepoMongo) FindByUid(ctx context.Context, uid string) (*domain.User, error) {
+func (ur *UserRepoMongo) FindByUID(ctx context.Context, uid string) (*domain.User, error) {
 	user := &domain.User{}
 	one := ur.collection.FindOne(ctx, bson.M{"uid": uid})
 	if err := one.Decode(user); err != nil {
@@ -46,8 +46,20 @@ func (ur *UserRepoMongo) FindByUid(ctx context.Context, uid string) (*domain.Use
 	return user, nil
 }
 
+func (ur *UserRepoMongo) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+	user := &domain.User{}
+	one := ur.collection.FindOne(ctx, bson.M{"email": email})
+	if err := one.Decode(user); err != nil {
+		if err == mongo.ErrNoDocuments {
+			err = domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
 func (ur *UserRepoMongo) Update(ctx context.Context, user *domain.User) error {
-	result, err := ur.collection.UpdateOne(ctx, bson.M{"uid": user.Uid}, bson.M{"$set": user})
+	result, err := ur.collection.UpdateOne(ctx, bson.M{"uid": user.UID}, bson.M{"$set": user})
 	if err != nil {
 		ur.log.Errorf("can't update user, reason: %v", err)
 		return err
@@ -66,7 +78,7 @@ func (ur *UserRepoMongo) Create(ctx context.Context, user *domain.User) (string,
 	return userID, err
 }
 
-func (ur *UserRepoMongo) DeleteByUid(ctx context.Context, uid string) error {
+func (ur *UserRepoMongo) DeleteByUID(ctx context.Context, uid string) error {
 	result, err := ur.collection.DeleteOne(ctx, bson.M{"uid": uid})
 	if err != nil {
 		ur.log.Errorf("can't delete user, reason: %v", err)

@@ -20,7 +20,7 @@ import (
 // @Router /api/v1/words/groups/{gid} [get]
 func (handler *Handler) wordsByGroup(ctx iris.Context) {
 	groupID := ctx.Params().Get("gid")
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
@@ -28,7 +28,7 @@ func (handler *Handler) wordsByGroup(ctx iris.Context) {
 	requestContext := api.RequestContext(ctx)
 
 	// check if group belongs to current user
-	wg, err := handler.services.WordGroupService.GetByIDAndUser(requestContext, groupID, userID)
+	wg, err := handler.services.WordGroupService.GetByIDAndUser(requestContext, groupID, userUID)
 	if err != nil && wg == nil {
 		badRequestResponse(ctx, err)
 		return
@@ -66,13 +66,13 @@ func (handler *Handler) createWord(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
 
-	wordGroup, err := handler.services.WordGroupService.GetByIDAndUser(api.RequestContext(ctx), word.GroupId, userID)
+	wordGroup, err := handler.services.WordGroupService.GetByIDAndUser(api.RequestContext(ctx), word.GroupID, userUID)
 	if err != nil || wordGroup == nil {
 		badRequestResponse(ctx, err)
 		return
@@ -101,13 +101,13 @@ func (handler *Handler) addWordToGroup(ctx iris.Context) {
 	groupID := ctx.Params().Get("gid")
 	wordName := ctx.Params().Get("name")
 
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
 	requestContext := api.RequestContext(ctx)
-	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, groupID, userID)
+	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, groupID, userUID)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
@@ -135,13 +135,13 @@ func (handler *Handler) removeWordFromGroup(ctx iris.Context) {
 	groupID := ctx.Params().Get("gid")
 	wordName := ctx.Params().Get("name")
 
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
 	requestContext := api.RequestContext(ctx)
-	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, groupID, userID)
+	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, groupID, userUID)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
@@ -174,25 +174,25 @@ func (handler *Handler) moveWordToGroup(ctx iris.Context) {
 		return
 	}
 
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
 	requestContext := api.RequestContext(ctx)
-	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, wgMove.FromGroupId, userID)
+	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, wgMove.FromGroupID, userUID)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
 
-	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, wgMove.ToGroupId, userID)
+	_, err = handler.services.WordGroupService.GetByIDAndUser(requestContext, wgMove.ToGroupID, userUID)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
 
-	err = handler.services.WordService.MoveToGroup(requestContext, wordName, wgMove.FromGroupId, wgMove.ToGroupId)
+	err = handler.services.WordService.MoveToGroup(requestContext, wordName, wgMove.FromGroupID, wgMove.ToGroupID)
 	if err != nil {
 		serverErrorResponse(ctx, err)
 		return

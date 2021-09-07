@@ -26,12 +26,12 @@ func (handler *Handler) createWordGroup(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
-	wordGroup.UserID = userID
+	wordGroup.UserUID = userUID
 	wordGroupID, err := handler.services.WordGroupService.Create(api.RequestContext(ctx), wordGroup)
 	if err := err; err != nil {
 		badRequestResponse(ctx, err)
@@ -52,12 +52,12 @@ func (handler *Handler) createWordGroup(ctx iris.Context) {
 // @Router /api/v1/wordgroups/{gid} [get]
 func (handler *Handler) getWordGroup(ctx iris.Context) {
 	gid := ctx.Params().Get("gid")
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
-	wordGroup, err := handler.services.WordGroupService.GetByIDAndUser(api.RequestContext(ctx), gid, userID)
+	wordGroup, err := handler.services.WordGroupService.GetByIDAndUser(api.RequestContext(ctx), gid, userUID)
 	if err := err; err != nil {
 		badRequestResponse(ctx, err)
 		return
@@ -83,12 +83,12 @@ func (handler *Handler) getWordGroup(ctx iris.Context) {
 func (handler *Handler) getWordGroups(ctx iris.Context) {
 	lid := ctx.Params().Get("lid")
 
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
-	wordGroups, err := handler.services.WordGroupService.GetAllByLangAndUser(api.RequestContext(ctx), lid, userID)
+	wordGroups, err := handler.services.WordGroupService.GetAllByLangAndUser(api.RequestContext(ctx), lid, userUID)
 	if err := err; err != nil {
 		badRequestResponse(ctx, err)
 		return
@@ -113,12 +113,12 @@ func (handler *Handler) getWordGroups(ctx iris.Context) {
 // @Router /api/v1/wordgroups/default/{lid} [get]
 func (handler *Handler) getDefaultWordGroup(ctx iris.Context) {
 	lid := ctx.Params().Get("lid")
-	userID, err := api.GetCurrentUserID(ctx)
+	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
-	wordGroup, err := handler.services.WordGroupService.GetDefault(api.RequestContext(ctx), lid, userID)
+	wordGroup, err := handler.services.WordGroupService.GetDefault(api.RequestContext(ctx), lid, userUID)
 	if err := err; err != nil {
 		badRequestResponse(ctx, err)
 		return

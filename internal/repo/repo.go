@@ -16,11 +16,12 @@ type Repositories struct {
 }
 
 type UserRepo interface {
-	FindByUid(ctx context.Context, uid string) (*domain.User, error)
+	FindByUID(ctx context.Context, uid string) (*domain.User, error)
 	Create(ctx context.Context, user *domain.User) (string, error)
 	FindAll(ctx context.Context) ([]*domain.User, error)
-	DeleteByUid(ctx context.Context, uid string) error
+	DeleteByUID(ctx context.Context, uid string) error
 	Update(ctx context.Context, user *domain.User) error
+	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 }
 
 type WordRepo interface {
@@ -34,9 +35,9 @@ type WordRepo interface {
 
 type WordGroupRepo interface {
 	Create(ctx context.Context, word *domain.WordGroup) (string, error)
-	FindByIDAndUser(ctx context.Context, groupID string, userID string) (*domain.WordGroup, error)
-	FindByLangAndUser(ctx context.Context, langID string, userID string, def bool) (*domain.WordGroup, error)
-	FindAllByLangAndUser(ctx context.Context, langID string, userID string) ([]*domain.WordGroup, error)
+	FindByIDAndUser(ctx context.Context, groupID string, userUID string) (*domain.WordGroup, error)
+	FindByLangAndUser(ctx context.Context, langID string, userUID string, def bool) (*domain.WordGroup, error)
+	FindAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error)
 }
 
 func New(cfg *config.Config, log logger.Logger, clients *client.Clients) *Repositories {

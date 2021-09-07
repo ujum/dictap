@@ -31,9 +31,7 @@ type WordServiceImpl struct {
 }
 
 func (w *WordServiceImpl) Create(ctx context.Context, wordDTO *dto.WordCreate) (string, error) {
-
 	var wordId string
-
 	word, err := w.GetByName(ctx, wordDTO.Name)
 	if err != nil && word == nil {
 
@@ -47,7 +45,7 @@ func (w *WordServiceImpl) Create(ctx context.Context, wordDTO *dto.WordCreate) (
 		}
 
 	}
-	err = w.AddToGroup(ctx, wordDTO.Name, wordDTO.GroupId)
+	err = w.AddToGroup(ctx, wordDTO.Name, wordDTO.GroupID)
 	return wordId, err
 }
 

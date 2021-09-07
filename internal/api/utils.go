@@ -7,7 +7,7 @@ import (
 	irisContext "github.com/kataras/iris/v12/context"
 )
 
-func GetCurrentUserID(ctx iris.Context) (string, error) {
+func GetCurrentUserUID(ctx iris.Context) (string, error) {
 	user, err := GetCurrentUser(ctx)
 	if err != nil {
 		return "", err

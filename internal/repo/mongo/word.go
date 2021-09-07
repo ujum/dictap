@@ -25,8 +25,11 @@ func NewWordRepoMongo(log logger.Logger, collection *mongo.Collection) *WordRepo
 }
 
 func (wr *WordRepoMongo) AddToGroup(ctx context.Context, name string, groupID string) error {
-	groupIDHEx, _ := primitive.ObjectIDFromHex(groupID)
-	_, err := wr.collection.UpdateOne(ctx, bson.M{"name": name},
+	groupIDHEx, err := primitive.ObjectIDFromHex(groupID)
+	if err != nil {
+		return err
+	}
+	_, err = wr.collection.UpdateOne(ctx, bson.M{"name": name},
 		bson.M{"$push": bson.M{"groups": bson.M{"group_id": groupIDHEx, "added_at": bsonx.Time(time.Now())}}})
 	if err != nil {
 		return err
@@ -48,7 +51,10 @@ func (wr *WordRepoMongo) FindByName(ctx context.Context, name string) (*domain.W
 }
 
 func (wr *WordRepoMongo) FindByGroup(ctx context.Context, groupID string) ([]*domain.Word, error) {
-	groupIDHex, _ := primitive.ObjectIDFromHex(groupID)
+	groupIDHex, err := primitive.ObjectIDFromHex(groupID)
+	if err != nil {
+		return nil, err
+	}
 	cursor, err := wr.collection.Find(ctx, bson.M{"groups.group_id": groupIDHex},
 		&options.FindOptions{Sort: bson.D{{"groups.added_at", -1}}})
 
@@ -64,7 +70,10 @@ func (wr *WordRepoMongo) FindByGroup(ctx context.Context, groupID string) ([]*do
 }
 
 func (wr *WordRepoMongo) FindByNameAndGroup(ctx context.Context, wordName string, groupID string) (*domain.Word, error) {
-	groupIDHex, _ := primitive.ObjectIDFromHex(groupID)
+	groupIDHex, err := primitive.ObjectIDFromHex(groupID)
+	if err != nil {
+		return nil, err
+	}
 
 	result := wr.collection.FindOne(ctx, bson.M{"name": wordName, "groups.group_id": groupIDHex})
 
@@ -84,8 +93,11 @@ func (wr *WordRepoMongo) Create(ctx context.Context, word *domain.Word) (string,
 }
 
 func (wr *WordRepoMongo) RemoveFromGroup(ctx context.Context, name string, groupID string) error {
-	groupIDHEx, _ := primitive.ObjectIDFromHex(groupID)
-	_, err := wr.collection.UpdateOne(ctx, bson.M{"name": name},
+	groupIDHEx, err := primitive.ObjectIDFromHex(groupID)
+	if err != nil {
+		return err
+	}
+	_, err = wr.collection.UpdateOne(ctx, bson.M{"name": name},
 		bson.M{"$pull": bson.M{"groups": bson.M{"group_id": groupIDHEx}}})
 	if err != nil {
 		return err

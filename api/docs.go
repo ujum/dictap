@@ -732,10 +732,10 @@ var doc = `{
         "dto.UserCredentials": {
             "type": "object",
             "properties": {
-                "password": {
+                "email": {
                     "type": "string"
                 },
-                "username": {
+                "password": {
                     "type": "string"
                 }
             }
@@ -743,9 +743,6 @@ var doc = `{
         "dto.UserUpdate": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },

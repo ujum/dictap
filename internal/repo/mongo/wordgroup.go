@@ -15,12 +15,14 @@ type WordGroupRepoMongo struct {
 	collection *mongo.Collection
 }
 
-func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langID string, userID string) ([]*domain.WordGroup, error) {
-	userIDHex, _ := primitive.ObjectIDFromHex(userID)
-	langIDHex, _ := primitive.ObjectIDFromHex(langID)
+func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error) {
+	langIDHex, err := primitive.ObjectIDFromHex(langID)
+	if err != nil {
+		return nil, err
+	}
 	var wgs []*domain.WordGroup
 
-	cursor, err := wgr.collection.Find(ctx, bson.M{"user_id": userIDHex, "lang_id": langIDHex})
+	cursor, err := wgr.collection.Find(ctx, bson.M{"user_uid": userUID, "lang_id": langIDHex})
 	if err != nil {
 		wgr.log.Errorf("can't find word groups by user, reason: %v", err)
 		return wgs, err
@@ -32,12 +34,14 @@ func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langID 
 	return wgs, nil
 }
 
-func (wgr *WordGroupRepoMongo) FindByIDAndUser(ctx context.Context, groupID string, userID string) (*domain.WordGroup, error) {
-	groupIDHEx, _ := primitive.ObjectIDFromHex(groupID)
-	userIDHEx, _ := primitive.ObjectIDFromHex(userID)
-	wg := &domain.WordGroup{}
+func (wgr *WordGroupRepoMongo) FindByIDAndUser(ctx context.Context, groupID string, userUID string) (*domain.WordGroup, error) {
+	groupIDHEx, err := primitive.ObjectIDFromHex(groupID)
+	if err != nil {
+		return nil, err
+	}
 
-	result := wgr.collection.FindOne(ctx, bson.M{"_id": groupIDHEx, "user_id": userIDHEx})
+	wg := &domain.WordGroup{}
+	result := wgr.collection.FindOne(ctx, bson.M{"_id": groupIDHEx, "user_uid": userUID})
 	if err := result.Decode(wg); err != nil {
 		if err == mongo.ErrNoDocuments {
 			err = domain.ErrNotFound
@@ -54,11 +58,14 @@ func NewWordGroupRepoMongo(log logger.Logger, collection *mongo.Collection) *Wor
 	}
 }
 
-func (wgr *WordGroupRepoMongo) FindByLangAndUser(ctx context.Context, langID string, userID string, def bool) (*domain.WordGroup, error) {
-	userIDHEx, _ := primitive.ObjectIDFromHex(userID)
-	langIDHEx, _ := primitive.ObjectIDFromHex(langID)
+func (wgr *WordGroupRepoMongo) FindByLangAndUser(ctx context.Context, langID string, userUID string, def bool) (*domain.WordGroup, error) {
+	langIDHEx, err := primitive.ObjectIDFromHex(langID)
+	if err != nil {
+		return nil, err
+	}
+
 	wg := &domain.WordGroup{}
-	result := wgr.collection.FindOne(ctx, bson.M{"lang_id": langIDHEx, "user_id": userIDHEx, "default": def})
+	result := wgr.collection.FindOne(ctx, bson.M{"lang_id": langIDHEx, "user_uid": userUID, "default": def})
 
 	if err := result.Decode(wg); err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -75,7 +82,9 @@ func (wgr *WordGroupRepoMongo) Create(ctx context.Context, wordGroup *domain.Wor
 	if err != nil {
 		return "", err
 	}
-	userIDHEx, _ := primitive.ObjectIDFromHex(wordGroup.UserID)
-	wgm.UserID = userIDHEx
+	wgm.LangID, err = primitive.ObjectIDFromHex(wordGroup.LangID)
+	if err != nil {
+		return "", err
+	}
 	return create(ctx, wgr.collection, wgm)
 }

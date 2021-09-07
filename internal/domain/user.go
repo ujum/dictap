@@ -6,10 +6,11 @@ import (
 
 type User struct {
 	ID           string    `bson:"_id,omitempty"`
-	Uid          string    `bson:"uid"`
+	UID          string    `bson:"uid"`
 	Name         string    `bson:"name"`
-	Email        string    `bson:"email"`
+	Email        string    `bson:"email,omitempty"`
 	Phone        string    `bson:"phone"`
-	Password     string    `bson:"password"`
+	Password     string    `bson:"password,omitempty"`
 	RegisteredAt time.Time `bson:"registeredAt"`
+	OAuthUser    bool      `bson:"oauth_user"`
 }
