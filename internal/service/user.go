@@ -99,10 +99,8 @@ func (us *UserServiceImpl) ChangePassword(ctx context.Context, uid string, crede
 	if err != nil {
 		return err
 	}
-	if user.Password != "" {
-		if !us.passHashService.CheckPasswordHash(credentials.OldPassword, user.Password) {
-			return domain.ErrUserIncorrectPass
-		}
+	if user.Password != "" && !us.passHashService.CheckPasswordHash(credentials.OldPassword, user.Password) {
+		return domain.ErrUserIncorrectPass
 	}
 	hashedPass, err := us.passHashService.HashPassword(credentials.Password)
 	user.Password = hashedPass
