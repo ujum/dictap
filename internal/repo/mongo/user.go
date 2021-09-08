@@ -59,6 +59,7 @@ func (ur *UserRepoMongo) FindByEmail(ctx context.Context, email string) (*domain
 }
 
 func (ur *UserRepoMongo) Update(ctx context.Context, user *domain.User) error {
+	user.ID = ""
 	result, err := ur.collection.UpdateOne(ctx, bson.M{"uid": user.UID}, bson.M{"$set": user})
 	if err != nil {
 		ur.log.Errorf("can't update user, reason: %v", err)

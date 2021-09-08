@@ -50,6 +50,8 @@ func (handler *Handler) routeV1(app *iris.Application) {
 			userGroup.Post("/", handler.createUser)
 			userGroup.Put("/{uid}", handler.updateUser)
 			userGroup.Delete("/{uid}", handler.deleteUser)
+			userGroup.Post("/{uid}/pass", handler.changeUserPass)
+			userGroup.Post("/pass", handler.changeSelfUserPass)
 		}
 		wordGroup := v1Group.Party("/words")
 		{

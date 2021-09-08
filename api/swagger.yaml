@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  dto.ChangeUserPassword:
+    properties:
+      old_password:
+        type: string
+      password:
+        type: string
+    type: object
   dto.TokenDTO:
     properties:
       access_token:
@@ -220,6 +227,59 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update user
+      tags:
+      - Users
+  /api/v1/users/{uid}/pass:
+    post:
+      description: Change user password
+      parameters:
+      - description: User uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Change user password dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangeUserPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Change user password
+      tags:
+      - Users
+  /api/v1/users/pass:
+    post:
+      description: Change self user password
+      parameters:
+      - description: Change user password dto
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChangeUserPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Change self user password
       tags:
       - Users
   /api/v1/wordgroups:

@@ -143,3 +143,58 @@ func (handler *Handler) deleteUser(ctx iris.Context) {
 	}
 	ctx.StopWithStatus(http.StatusOK)
 }
+
+// changeUserPass godoc
+// @Summary Change user password
+// @Tags Users
+// @Description Change user password
+// @Produce  json
+// @Param uid path string true "User uid"
+// @Param user body dto.ChangeUserPassword true "Change user password dto"
+// @Success 200
+// @Failure 404 {object} errResponse
+// @Security ApiKeyAuth
+// @Router /api/v1/users/{uid}/pass [post]
+func (handler *Handler) changeUserPass(ctx iris.Context) {
+	uid := ctx.Params().Get("uid")
+	change := &dto.ChangeUserPassword{}
+	if err := ctx.ReadJSON(change); err != nil {
+		serverErrorResponse(ctx, err)
+		return
+	}
+	err := handler.services.UserService.ChangePassword(api.RequestContext(ctx), uid, change)
+	if err != nil {
+		ctx.StopWithJSON(http.StatusNotFound, errResponse{Message: err.Error()})
+		return
+	}
+	ctx.StopWithStatus(http.StatusOK)
+}
+
+// changeSelfUserPass godoc
+// @Summary Change self user password
+// @Tags Users
+// @Description Change self user password
+// @Produce  json
+// @Param user body dto.ChangeUserPassword true "Change user password dto"
+// @Success 200
+// @Failure 404 {object} errResponse
+// @Security ApiKeyAuth
+// @Router /api/v1/users/pass [post]
+func (handler *Handler) changeSelfUserPass(ctx iris.Context) {
+	uid, err := api.GetCurrentUserUID(ctx)
+	if err != nil {
+		badRequestResponse(ctx, err)
+		return
+	}
+	change := &dto.ChangeUserPassword{}
+	if err := ctx.ReadJSON(change); err != nil {
+		serverErrorResponse(ctx, err)
+		return
+	}
+	err = handler.services.UserService.ChangePassword(api.RequestContext(ctx), uid, change)
+	if err != nil {
+		badRequestResponse(ctx, err)
+		return
+	}
+	ctx.StopWithStatus(http.StatusOK)
+}

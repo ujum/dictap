@@ -23,3 +23,8 @@ type UserCredentials struct {
 	Email    string `json:"email,required"`
 	Password string ` json:"password,required"`
 }
+
+type ChangeUserPassword struct {
+	OldPassword string ` json:"old_password,required"`
+	Password    string ` json:"password,required"`
+}

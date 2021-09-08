@@ -106,6 +106,45 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/users/pass": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Change self user password",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Change self user password",
+                "parameters": [
+                    {
+                        "description": "Change user password dto",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChangeUserPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/{uid}": {
             "get": {
                 "security": [
@@ -210,6 +249,52 @@ var doc = `{
                         "name": "uid",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{uid}/pass": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Change user password",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Change user password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Change user password dto",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChangeUserPassword"
+                        }
                     }
                 ],
                 "responses": {
@@ -681,6 +766,17 @@ var doc = `{
         }
     },
     "definitions": {
+        "dto.ChangeUserPassword": {
+            "type": "object",
+            "properties": {
+                "old_password": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TokenDTO": {
             "type": "object",
             "properties": {

@@ -19,6 +19,7 @@ type UserService interface {
 	GetAll(ctx context.Context) ([]*domain.User, error)
 	DeleteByUid(ctx context.Context, uid string) error
 	GetByCredentials(ctx context.Context, credentials *dto.UserCredentials) (*domain.User, error)
+	ChangePassword(ctx context.Context, uid string, credentials *dto.ChangeUserPassword) error
 }
 
 type UserServiceImpl struct {
@@ -91,4 +92,22 @@ func (us *UserServiceImpl) Update(ctx context.Context, userDTO *dto.UserUpdate) 
 
 func (us *UserServiceImpl) DeleteByUid(ctx context.Context, uid string) error {
 	return us.userRepo.DeleteByUID(ctx, uid)
+}
+
+func (us *UserServiceImpl) ChangePassword(ctx context.Context, uid string, credentials *dto.ChangeUserPassword) error {
+	user, err := us.GetByUID(ctx, uid)
+	if err != nil {
+		return err
+	}
+	if user.Password != "" {
+		if !us.passHashService.CheckPasswordHash(credentials.OldPassword, user.Password) {
+			return domain.ErrUserIncorrectPass
+		}
+	}
+	hashedPass, err := us.passHashService.HashPassword(credentials.Password)
+	user.Password = hashedPass
+	if err != nil {
+		return err
+	}
+	return us.userRepo.Update(ctx, user)
 }
