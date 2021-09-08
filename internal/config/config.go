@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/ujum/dictap/pkg/config/loader"
+	"golang.org/x/oauth2"
 )
 
 const (
@@ -18,7 +19,13 @@ type Config struct {
 }
 
 type SecurityConfig struct {
-	ApiKeyAuth *ApiKeyAuthConfig
+	ApiKeyAuth   *ApiKeyAuthConfig
+	GoogleOAuth2 *OAuthConfig
+}
+
+type OAuthConfig struct {
+	oauth2.Config
+	UserInfoURL string
 }
 
 type ApiKeyAuthConfig struct {

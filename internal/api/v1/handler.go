@@ -36,6 +36,8 @@ func (handler *Handler) RegisterRoutes(app *iris.Application) {
 func (handler *Handler) routeV1(app *iris.Application) {
 	app.Post("/auth", handler.auth)
 	app.Post("/refresh", handler.refresh)
+	app.Get("/auth/google", handler.googleLogin)
+	app.Get("/auth/google/callback", handler.googleCallback)
 
 	tokenVerifyHandler := handler.services.JwtVerifier.Verify(func() interface{} {
 		return new(context.SimpleUser)
