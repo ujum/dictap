@@ -46,4 +46,4 @@ docker-build:
 	docker build -t dictup .
 
 docker-run:
-	 docker run --rm --name dictup -p ${PORT}:${PORT} --network host dictup
+	 docker run --rm --name dictup --network host dictup
