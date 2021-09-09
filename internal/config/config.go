@@ -48,9 +48,9 @@ type DatasourceConfig struct {
 }
 
 type MongoDatasourceConfig struct {
-	Port   int
-	Schema string
-	Host   string
+	Port     int
+	Database string
+	Host     string
 }
 
 func New(configDir string) (*Config, error) {

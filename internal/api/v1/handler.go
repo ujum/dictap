@@ -76,7 +76,11 @@ func (handler *Handler) routeV1(app *iris.Application) {
 
 func (handler *Handler) routeSwagger(app *iris.Application) {
 	const protocol = "http"
-	hostPort := fmt.Sprintf("%s:%d", handler.config.Host, handler.config.Port)
+	var host string
+	if handler.config.Host == "" {
+		host = "localhost"
+	}
+	hostPort := fmt.Sprintf("%s:%d", host, handler.config.Port)
 	url := protocol + "://" + hostPort + "/swagger/doc.json"
 
 	swaggerUI := swagger.CustomWrapHandler(

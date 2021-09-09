@@ -3,7 +3,7 @@ app:
 logger:
   level: info
 server:
-  host: localhost
+  host: ""
   port: 8080
   security:
     apiKeyAuth:
@@ -26,4 +26,4 @@ datasource:
   mongo:
     host: localhost
     port: 27017
-    schema: dictup
+    database: dictup

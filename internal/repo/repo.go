@@ -41,7 +41,7 @@ type WordGroupRepo interface {
 }
 
 func New(cfg *config.Config, log logger.Logger, clients *client.Clients) *Repositories {
-	mongoDatabase := clients.Mongo.Client.Database(cfg.Datasource.Mongo.Schema)
+	mongoDatabase := clients.Mongo.Client.Database(cfg.Datasource.Mongo.Database)
 	return &Repositories{
 		UserRepo:      mongo.NewUserRepoMongo(cfg, log, mongoDatabase.Collection("users")),
 		WordRepo:      mongo.NewWordRepoMongo(log, mongoDatabase.Collection("words")),

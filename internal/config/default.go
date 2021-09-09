@@ -8,7 +8,7 @@ import (
 func defaultValue() *Config {
 	return &Config{
 		Server: &ServerConfig{
-			Host: "localhost",
+			Host: "",
 			Port: 8080,
 			Security: &SecurityConfig{
 				ApiKeyAuth: &ApiKeyAuthConfig{
@@ -29,9 +29,9 @@ func defaultValue() *Config {
 		},
 		Datasource: &DatasourceConfig{
 			Mongo: &MongoDatasourceConfig{
-				Host:   "localhost",
-				Port:   27017,
-				Schema: "dictup",
+				Host:     "localhost",
+				Port:     27017,
+				Database: "dictup",
 			},
 		},
 		Logger: &LoggerConfig{Level: "info"},
