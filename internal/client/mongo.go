@@ -7,7 +7,6 @@ import (
 	"github.com/ujum/dictap/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"sync"
 	"time"
 )
 
@@ -17,8 +16,13 @@ type MongoClient struct {
 	Client *mongo.Client
 }
 
-func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg *config.MongoDatasourceConfig, log logger.Logger) (*MongoClient, error) {
-	endpoint := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.Username, cfg.Password, cfg.Host, cfg.Port)
+func CreateMongoClient(parentCtx context.Context, cfg *config.MongoDatasourceConfig, log logger.Logger) (*MongoClient, error) {
+	var endpoint string
+	if cfg.Username != "" {
+		endpoint = fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.Username, cfg.Password, cfg.Host, cfg.Port)
+	} else {
+		endpoint = fmt.Sprintf("mongodb://%s:%d", cfg.Host, cfg.Port)
+	}
 	opts := options.Client().ApplyURI(endpoint)
 
 	client, err := mongo.NewClient(opts)
@@ -26,7 +30,7 @@ func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(parentCtx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(parentCtx, 10*time.Second)
 	defer cancel()
 
 	err = client.Connect(ctx)
@@ -46,20 +50,7 @@ func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg
 		cfg:    cfg,
 		Client: client,
 	}
-	waitGroup.Add(1)
-	go func() {
-		<-parentCtx.Done()
-		if discErr := mc.Disconnect(ctx); discErr != nil {
-			log.Error(err)
-		}
-		defer waitGroup.Done()
-	}()
-
 	return mc, nil
-}
-
-func (mongoClient *MongoClient) Query() {
-	mongoClient.logger.Info("mongo client Query")
 }
 
 func (mongoClient *MongoClient) Disconnect(ctx context.Context) error {

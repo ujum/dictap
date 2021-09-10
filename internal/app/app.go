@@ -8,7 +8,6 @@ import (
 	"github.com/ujum/dictap/internal/server"
 	"github.com/ujum/dictap/internal/service"
 	"github.com/ujum/dictap/pkg/logger"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
@@ -17,42 +16,29 @@ import (
 
 func Run(configFilePath string) error {
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	appConfig, err := config.New(configFilePath)
 	if err != nil {
-		log.Printf("can't override default config. Using default. Reason: %+v", err)
+		log.Printf("can't override default config. Reason: %+v", err)
+		return err
 	}
 	appLogger := logger.NewLogrus(appConfig)
-	depsCtx, depsCtxCancel := context.WithCancel(context.Background())
 
-	deps, err := createDependencies(depsCtx, appConfig, appLogger)
-	if err != nil {
-		appLogger.Errorf("can't create app dependencies: %v", err)
-		//cancel root and deps context
-		cancel()
-		depsCtxCancel()
+	go listenStopSignals(ctx, cancel, appLogger)
+
+	deps, err := createDependencies(ctx, appConfig, appLogger)
+	defer func() {
+		// close all clients connections
 		if deps.Clients != nil {
-			deps.Clients.WaitDisconnect()
+			deps.Clients.Disconnect()
 		}
+	}()
+	if err != nil {
 		return err
 	}
-
 	srv := server.New(appConfig.Server, appLogger, deps.Services)
-
-	var g errgroup.Group
-
-	g.Go(func() error {
-		servErr := srv.Start(ctx)
-		// cancel deps context when server is stopped
-		depsCtxCancel()
-		deps.Clients.WaitDisconnect()
-		return servErr
-	})
-	go listenStopSignals(ctx, cancel, srv, deps)
-	if err = g.Wait(); err != nil {
-		return err
-	}
-	return nil
+	return srv.Start(ctx)
 }
 
 func createDependencies(ctx context.Context, cfg *config.Config, appLogger logger.Logger) (*service.Deps, error) {
@@ -68,17 +54,14 @@ func createDependencies(ctx context.Context, cfg *config.Config, appLogger logge
 	return service.NewDeps(appLogger, clients, repos, services), nil
 }
 
-func listenStopSignals(ctx context.Context, cancel context.CancelFunc, srv *server.Server, deps *service.Deps) {
+func listenStopSignals(ctx context.Context, cancel context.CancelFunc, appLogger logger.Logger) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT)
 	select {
 	case <-ctx.Done():
-		deps.Logger.Debug("root context has been closed. Stopping server...")
-		if err := srv.Stop(); err != nil {
-			deps.Logger.Errorf("http: web server shutdown failed: %+v", err)
-		}
+		appLogger.Debug("root context has been closed.")
 	case sign := <-signalChan:
-		deps.Logger.Infof("system call: %+v", sign)
+		appLogger.Infof("system call: %+v", sign)
 		cancel()
 	}
 }

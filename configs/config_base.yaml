@@ -27,5 +27,5 @@ datasource:
     host: localhost
     port: 27017
     database: dictup
-    username: dictup
-    password: dictup
+    username:
+    password:

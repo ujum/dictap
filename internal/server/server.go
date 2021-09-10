@@ -8,7 +8,6 @@ import (
 	"github.com/ujum/dictap/internal/config"
 	"github.com/ujum/dictap/internal/service"
 	"github.com/ujum/dictap/pkg/logger"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"net/http"
 	"time"
@@ -75,32 +74,27 @@ func New(cfg *config.ServerConfig, appLogger logger.Logger, services *service.Se
 }
 
 func (appSrv *Server) Start(ctx context.Context) error {
-	var g errgroup.Group
-	g.Go(func() error {
-		if err := appSrv.Iris.Run(iris.Server(appSrv.httpServer)); err != nil {
-			if err == http.ErrServerClosed {
-				appSrv.Logger.Info("http: web server shutdown complete")
-				return nil
-			}
-			appSrv.Logger.Errorf("http: web server closed unexpect: %s", err)
-			return err
+	if err := appSrv.Iris.Run(iris.Server(appSrv.httpServer)); err != nil {
+		if err == http.ErrServerClosed {
+			appSrv.Logger.Info("http: web server shutdown complete")
+			return nil
 		}
-		// stop server if context closed
-		g.Go(func() error {
-			<-ctx.Done()
-			return appSrv.Stop()
-		})
-		return nil
-	})
-	// wait for server start end or context closed
-	return g.Wait()
+		appSrv.Logger.Errorf("http: web server closed unexpect: %v", err)
+		return err
+	}
+	// stop the server if context closed
+	go func() {
+		<-ctx.Done()
+		if err := appSrv.Stop(); err != nil {
+			appSrv.Logger.Debugf("http: web server shutdown err: %v", err)
+		}
+	}()
+	return nil
 }
 
 func (appSrv *Server) Stop() error {
 	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
 	if err := appSrv.Iris.Shutdown(ctxShutDown); err != nil {
 		return err
 	}

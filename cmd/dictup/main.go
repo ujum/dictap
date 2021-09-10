@@ -19,6 +19,5 @@ func main() {
 func configPath() string {
 	configPath := flag.String("cfg", configDir, "Config directory path")
 	flag.Parse()
-
 	return *configPath
 }
