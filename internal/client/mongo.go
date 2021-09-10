@@ -18,8 +18,8 @@ type MongoClient struct {
 }
 
 func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg *config.MongoDatasourceConfig, log logger.Logger) (*MongoClient, error) {
-	endpoint := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	opts := options.Client().ApplyURI("mongodb://" + endpoint)
+	endpoint := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.Username, cfg.Password, cfg.Host, cfg.Port)
+	opts := options.Client().ApplyURI(endpoint)
 
 	client, err := mongo.NewClient(opts)
 	if err != nil {
@@ -39,7 +39,7 @@ func CreateMongoClient(parentCtx context.Context, waitGroup *sync.WaitGroup, cfg
 		return nil, err
 	}
 
-	log.Debugf("connected to mongo %s", endpoint)
+	log.Debugf("connected to mongo [host: %s, port: %d]", cfg.Host, cfg.Port)
 
 	mc := &MongoClient{
 		logger: log,

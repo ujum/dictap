@@ -3,14 +3,12 @@ BUILD_DIR=./out
 BINARY_NAME=${BUILD_DIR}/dictup
 SOURCE_MAIN_NAME=./cmd/dictup/main.go
 SWAGGER_SCAN=./internal/server/server.go
-PORT=8080
 
-build: copy-configs
-	go build -o ${BINARY_NAME} ${SOURCE_MAIN_NAME}
-
+build: copy-configs swagger
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME} ${SOURCE_MAIN_NAME}
 
 copy-configs:
-	cp -r ./configs ${BUILD_DIR}
+	mkdir -p ${BUILD_DIR} && cp -r ./configs --parents ${BUILD_DIR}
 
 run:
 	go run ${SOURCE_MAIN_NAME}
@@ -18,7 +16,7 @@ run:
 run-swag: swagger
 	go run ${SOURCE_MAIN_NAME}
 
-compile: copy-configs
+compile: copy-configs swagger
 	# 64-Bit
 	# Linux
 	GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME}-linux-amd64.bin ${SOURCE_MAIN_NAME}
@@ -37,9 +35,9 @@ goinstall:
 
 
 check-swagger:
-	which swag || (go get -u github.com/swaggo/swag/cmd/swag)
+	which swag || (go install github.com/swaggo/swag/cmd/swag)
 
-swagger:
+swagger: check-swagger
 	swag init -g ${SWAGGER_SCAN} -o ./api
 
 docker-build:

@@ -51,6 +51,8 @@ type MongoDatasourceConfig struct {
 	Port     int
 	Database string
 	Host     string
+	Username string
+	Password string
 }
 
 func New(configDir string) (*Config, error) {
