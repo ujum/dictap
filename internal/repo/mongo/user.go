@@ -2,8 +2,8 @@ package mongo
 
 import (
 	"context"
-	"github.com/ujum/dictap/internal/config"
 	"github.com/ujum/dictap/internal/domain"
+	derr "github.com/ujum/dictap/internal/error"
 	"github.com/ujum/dictap/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,7 +14,7 @@ type UserRepoMongo struct {
 	log        logger.Logger
 }
 
-func NewUserRepoMongo(cfg *config.Config, log logger.Logger, collection *mongo.Collection) *UserRepoMongo {
+func NewUserRepoMongo(log logger.Logger, collection *mongo.Collection) *UserRepoMongo {
 	return &UserRepoMongo{
 		collection: collection,
 		log:        log,
@@ -39,7 +39,7 @@ func (ur *UserRepoMongo) FindByUID(ctx context.Context, uid string) (*domain.Use
 	one := ur.collection.FindOne(ctx, bson.M{"uid": uid})
 	if err := one.Decode(user); err != nil {
 		if err == mongo.ErrNoDocuments {
-			err = domain.ErrUserNotFound
+			err = derr.ErrNotFound
 		}
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (ur *UserRepoMongo) FindByEmail(ctx context.Context, email string) (*domain
 	one := ur.collection.FindOne(ctx, bson.M{"email": email})
 	if err := one.Decode(user); err != nil {
 		if err == mongo.ErrNoDocuments {
-			err = domain.ErrUserNotFound
+			err = derr.ErrNotFound
 		}
 		return nil, err
 	}
@@ -66,15 +66,15 @@ func (ur *UserRepoMongo) Update(ctx context.Context, user *domain.User) error {
 		return err
 	}
 	if result.MatchedCount == 0 {
-		return domain.ErrUserNotFound
+		return derr.ErrNotFound
 	}
 	return err
 }
 
 func (ur *UserRepoMongo) Create(ctx context.Context, user *domain.User) (string, error) {
 	userID, err := create(ctx, ur.collection, user)
-	if err == domain.ErrAlreadyExists {
-		return userID, domain.ErrUserAlreadyExists
+	if err == derr.ErrAlreadyExists {
+		return userID, derr.ErrAlreadyExists
 	}
 	return userID, err
 }
@@ -86,7 +86,7 @@ func (ur *UserRepoMongo) DeleteByUID(ctx context.Context, uid string) error {
 		return err
 	}
 	if result.DeletedCount == 0 {
-		return domain.ErrUserNotFound
+		return derr.ErrNotFound
 	}
 	return nil
 }

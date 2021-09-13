@@ -14,7 +14,7 @@ type createResponse struct {
 }
 
 func createdResponse(ctx iris.Context, id string) {
-	ctx.StopWithJSON(http.StatusAccepted, &createResponse{ID: id})
+	ctx.StopWithJSON(http.StatusCreated, &createResponse{ID: id})
 }
 
 func serverErrorResponse(ctx iris.Context, err error) {
@@ -23,4 +23,8 @@ func serverErrorResponse(ctx iris.Context, err error) {
 
 func badRequestResponse(ctx iris.Context, err error) {
 	ctx.StopWithJSON(http.StatusBadRequest, &errResponse{Message: err.Error()})
+}
+
+func notFoundResponse(ctx iris.Context, msg string) {
+	ctx.StopWithJSON(http.StatusNotFound, &errResponse{Message: msg})
 }

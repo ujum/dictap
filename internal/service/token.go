@@ -73,7 +73,7 @@ func (tokenSrv *JwtTokenService) Generate(requestCtx ctx.Context, credentials *d
 func (tokenSrv *JwtTokenService) Refresh(requestCtx ctx.Context, refreshToken json.RawMessage) (*dto.TokenDTO, error) {
 	verifiedToken, err := tokenSrv.verifier.VerifyToken(refreshToken)
 	if err != nil {
-		tokenSrv.log.Errorf("verify refresh token: %v", err)
+		tokenSrv.log.Errorf("verify refresh token error: %v", err)
 		return nil, err
 	}
 	user, err := tokenSrv.userService.GetByUID(requestCtx, verifiedToken.StandardClaims.Subject)

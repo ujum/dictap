@@ -35,8 +35,6 @@ definitions:
         type: string
       phone:
         type: string
-      uid:
-        type: string
     type: object
   dto.UserCredentials:
     properties:
@@ -70,14 +68,14 @@ definitions:
     properties:
       id:
         type: string
-      lang_id:
+      lang_iso:
         type: string
       name:
         type: string
     type: object
   dto.WordGroupCreate:
     properties:
-      lang_id:
+      lang_iso:
         type: string
       name:
         type: string
@@ -120,8 +118,8 @@ paths:
             items:
               $ref: '#/definitions/dto.User'
             type: array
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -143,10 +141,14 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: ""
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -168,8 +170,8 @@ paths:
       responses:
         "200":
           description: ""
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -192,8 +194,16 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -220,8 +230,16 @@ paths:
       responses:
         "200":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -230,7 +248,7 @@ paths:
       tags:
       - Users
   /api/v1/users/{uid}/pass:
-    post:
+    put:
       description: Change user password
       parameters:
       - description: User uid
@@ -249,8 +267,16 @@ paths:
       responses:
         "200":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -259,7 +285,7 @@ paths:
       tags:
       - Users
   /api/v1/users/pass:
-    post:
+    put:
       description: Change self user password
       parameters:
       - description: Change user password dto
@@ -273,8 +299,16 @@ paths:
       responses:
         "200":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -297,10 +331,14 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: ""
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -328,43 +366,26 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/v1.errResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errResponse'
       security:
       - ApiKeyAuth: []
       summary: Word group by id
       tags:
       - WordGroups
-  /api/v1/wordgroups/default/{lid}:
+  /api/v1/wordgroups/langs/{iso}:
     get:
-      description: Get word group by language
+      description: Get all word groups for language
       parameters:
-      - description: lang id
+      - description: language iso code
         in: path
-        name: lid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.WordGroup'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.errResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Get default word group by language
-      tags:
-      - WordGroups
-  /api/v1/wordgroups/langs/{lid}:
-    get:
-      description: Get all word groups
-      parameters:
-      - description: language id
-        in: path
-        name: lid
+        name: iso
         required: true
         type: string
       produces:
@@ -380,9 +401,44 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errResponse'
       security:
       - ApiKeyAuth: []
-      summary: List word groups
+      summary: List word groups for language
+      tags:
+      - WordGroups
+  /api/v1/wordgroups/langs/{iso}/default:
+    get:
+      description: Get word group for language
+      parameters:
+      - description: lang iso code
+        in: path
+        name: iso
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WordGroup'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "404":
+          description: ""
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get default word group for language
       tags:
       - WordGroups
   /api/v1/words:
@@ -400,10 +456,18 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: ""
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -429,10 +493,18 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "202":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -457,10 +529,18 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "202":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -484,10 +564,18 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "202":
           description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -513,8 +601,16 @@ paths:
             items:
               $ref: '#/definitions/dto.Word'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       security:
@@ -543,7 +639,26 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/v1.errResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.errResponse'
       summary: Create new token pair
+      tags:
+      - Token
+  /auth/google:
+    get:
+      description: Sign up/in with Google
+      produces:
+      - application/json
+      responses:
+        "307":
+          description: ""
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+      summary: Google Login
       tags:
       - Token
   /refresh:
@@ -564,6 +679,10 @@ paths:
             $ref: '#/definitions/dto.TokenDTO'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.errResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.errResponse'
       summary: Generate new token pair by refresh token

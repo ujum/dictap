@@ -16,13 +16,13 @@ type WordGroupMovement struct {
 }
 
 type WordGroup struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	LangID string `json:"lang_id"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	LangISO string `json:"lang_iso"`
 }
 
 type WordGroupCreate struct {
 	Name    string `json:"name"`
-	LangID  string `json:"lang_id"`
+	LangISO string `json:"lang_iso"`
 	UserUID string `json:"-" swaggerignore:"true"`
 }

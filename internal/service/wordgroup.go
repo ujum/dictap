@@ -32,8 +32,8 @@ func (wgs *WordGroupServiceImpl) GetByIDAndUser(ctx context.Context, groupID str
 	return wgs.wordGroupRepo.FindByIDAndUser(ctx, groupID, userUID)
 }
 
-func (wgs *WordGroupServiceImpl) GetDefault(ctx context.Context, langID string, userUID string) (*domain.WordGroup, error) {
-	return wgs.wordGroupRepo.FindByLangAndUser(ctx, langID, userUID, true)
+func (wgs *WordGroupServiceImpl) GetDefault(ctx context.Context, langISO string, userUID string) (*domain.WordGroup, error) {
+	return wgs.wordGroupRepo.FindByLangAndUser(ctx, langISO, userUID, true)
 }
 
 func (wgs *WordGroupServiceImpl) GetAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error) {

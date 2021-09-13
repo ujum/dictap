@@ -25,7 +25,8 @@ type SecurityConfig struct {
 
 type OAuthConfig struct {
 	oauth2.Config
-	UserInfoURL string
+	UserInfoURL        string
+	RedirectOnErrorURL string
 }
 
 type ApiKeyAuthConfig struct {

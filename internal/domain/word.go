@@ -6,8 +6,8 @@ import (
 )
 
 type WG struct {
-	GroupID string    `bson:"group_id"`
-	AddedAt time.Time `bson:"added_at"`
+	GroupID primitive.ObjectID `bson:"group_id"`
+	AddedAt time.Time          `bson:"added_at"`
 }
 
 type Word struct {
@@ -18,7 +18,7 @@ type Word struct {
 type WordGroupMongo struct {
 	ID      primitive.ObjectID `bson:"_id,omitempty"`
 	UserUID string             `bson:"user_uid"`
-	LangID  primitive.ObjectID `bson:"lang_id"`
+	LangISO string             `bson:"lang_iso"`
 	Name    string             `bson:"name"`
 	Default bool               `bson:"default"`
 }
@@ -27,6 +27,6 @@ type WordGroup struct {
 	ID      string `bson:"_id,omitempty"`
 	UserUID string `bson:"user_uid"`
 	Name    string `bson:"name"`
-	LangID  string `bson:"lang_id"`
+	LangISO string `bson:"lang_iso"`
 	Default bool   `bson:"default"`
 }

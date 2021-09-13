@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/ujum/dictap/internal/domain"
 	"github.com/ujum/dictap/internal/dto"
+	derr "github.com/ujum/dictap/internal/error"
 	"github.com/ujum/dictap/internal/repo"
 	"github.com/ujum/dictap/pkg/logger"
 	"time"
@@ -55,7 +56,7 @@ func (us *UserServiceImpl) GetByCredentials(ctx context.Context, credentials *dt
 	}
 
 	if !us.passHashService.CheckPasswordHash(credentials.Password, user.Password) {
-		return nil, domain.ErrUserIncorrectPass
+		return nil, derr.ErrUserIncorrectPass
 	}
 	return user, nil
 }
@@ -63,7 +64,7 @@ func (us *UserServiceImpl) GetByCredentials(ctx context.Context, credentials *dt
 func (us *UserServiceImpl) Create(ctx context.Context, userDTO *dto.UserCreate) (string, error) {
 	existingUser, _ := us.GetByEmail(ctx, userDTO.Email)
 	if existingUser != nil {
-		return "", domain.ErrUserAlreadyExists
+		return "", derr.ErrAlreadyExists
 	}
 	user := &domain.User{}
 	if err := copier.CopyWithOption(user, userDTO, copier.Option{}); err != nil {
@@ -91,7 +92,11 @@ func (us *UserServiceImpl) Update(ctx context.Context, userDTO *dto.UserUpdate) 
 }
 
 func (us *UserServiceImpl) DeleteByUid(ctx context.Context, uid string) error {
-	return us.userRepo.DeleteByUID(ctx, uid)
+	err := us.userRepo.DeleteByUID(ctx, uid)
+	if err != derr.ErrNotFound {
+		return err
+	}
+	return nil
 }
 
 func (us *UserServiceImpl) ChangePassword(ctx context.Context, uid string, credentials *dto.ChangeUserPassword) error {
@@ -100,7 +105,7 @@ func (us *UserServiceImpl) ChangePassword(ctx context.Context, uid string, crede
 		return err
 	}
 	if user.Password != "" && !us.passHashService.CheckPasswordHash(credentials.OldPassword, user.Password) {
-		return domain.ErrUserIncorrectPass
+		return derr.ErrUserIncorrectPass
 	}
 	hashedPass, err := us.passHashService.HashPassword(credentials.Password)
 	user.Password = hashedPass

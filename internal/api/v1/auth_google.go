@@ -7,15 +7,13 @@ import (
 	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/ujum/dictap/internal/api"
-	"github.com/ujum/dictap/internal/domain"
 	"github.com/ujum/dictap/internal/dto"
+	derr "github.com/ujum/dictap/internal/error"
 	"io/ioutil"
 	"net/http"
 )
 
-const (
-	authState = "state"
-)
+const authState = "state"
 
 type googleUser struct {
 	ID      string `json:"id"`
@@ -24,6 +22,14 @@ type googleUser struct {
 	Picture string `json:"picture"`
 }
 
+// googleLogin godoc
+// @Summary Google Login
+// @Tags Token
+// @Description Sign up/in with Google
+// @Produce  json
+// @Success 307
+// @Failure 500 {object} errResponse
+// @Router /auth/google [get]
 func (handler *Handler) googleLogin(ctx iris.Context) {
 	state, err := api.GenerateRandomString()
 	if err != nil {
@@ -50,24 +56,22 @@ func (handler *Handler) googleCallback(ctx iris.Context) {
 		return
 	}
 	if err != nil {
-		fmt.Println(err.Error())
-		ctx.Redirect("/", http.StatusTemporaryRedirect)
+		handler.logger.Errorf("cant get google user info: %v", err)
+		ctx.Redirect(handler.config.Security.GoogleOAuth2.RedirectOnErrorURL, http.StatusTemporaryRedirect)
 		return
 	}
-	googleUserIngo := &googleUser{}
-	err = json.Unmarshal(content, googleUserIngo)
+	googleUserInfo := &googleUser{}
+	err = json.Unmarshal(content, googleUserInfo)
 
 	userCreate := &dto.UserCreate{
-		User: dto.User{
-			Email: googleUserIngo.Email,
-			Name:  googleUserIngo.Name,
-		},
+		Email:     googleUserInfo.Email,
+		Name:      googleUserInfo.Name,
 		OAuthUser: true,
 	}
 
 	requestContext := api.RequestContext(ctx)
 	_, err = handler.services.UserService.Create(requestContext, userCreate)
-	if err != nil && err != domain.ErrUserAlreadyExists {
+	if err != nil && err != derr.ErrAlreadyExists {
 		badRequestResponse(ctx, err)
 		return
 	}

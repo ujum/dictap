@@ -23,7 +23,7 @@ func GetCurrentUserUID(ctx iris.Context) (string, error) {
 
 func GetCurrentUser(ctx iris.Context) (irisContext.User, error) {
 	if ctx.User() == nil {
-		return nil, errors.New("user is nil")
+		return nil, errors.New("ctx user is empty")
 	}
 	return ctx.User(), nil
 }

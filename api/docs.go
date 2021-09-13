@@ -57,8 +57,8 @@ var doc = `{
                             }
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -94,11 +94,17 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": ""
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -107,7 +113,7 @@ var doc = `{
             }
         },
         "/api/v1/users/pass": {
-            "post": {
+            "put": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -136,8 +142,20 @@ var doc = `{
                     "200": {
                         "description": ""
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -176,8 +194,20 @@ var doc = `{
                             "$ref": "#/definitions/dto.User"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -220,8 +250,20 @@ var doc = `{
                     "200": {
                         "description": ""
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -255,8 +297,8 @@ var doc = `{
                     "200": {
                         "description": ""
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -265,7 +307,7 @@ var doc = `{
             }
         },
         "/api/v1/users/{uid}/pass": {
-            "post": {
+            "put": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -301,8 +343,20 @@ var doc = `{
                     "200": {
                         "description": ""
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -340,7 +394,7 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": ""
                     },
                     "400": {
@@ -348,43 +402,9 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
-                    }
-                }
-            }
-        },
-        "/api/v1/wordgroups/default/{lid}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get word group by language",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "WordGroups"
-                ],
-                "summary": "Get default word group by language",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "lang id",
-                        "name": "lid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.WordGroup"
-                        }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -392,26 +412,26 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/wordgroups/langs/{lid}": {
+        "/api/v1/wordgroups/langs/{iso}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get all word groups",
+                "description": "Get all word groups for language",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "WordGroups"
                 ],
-                "summary": "List word groups",
+                "summary": "List word groups for language",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "language id",
-                        "name": "lid",
+                        "description": "language iso code",
+                        "name": "iso",
                         "in": "path",
                         "required": true
                     }
@@ -428,6 +448,61 @@ var doc = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/wordgroups/langs/{iso}/default": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get word group for language",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WordGroups"
+                ],
+                "summary": "Get default word group for language",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "lang iso code",
+                        "name": "iso",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WordGroup"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "404": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -471,6 +546,18 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
                     }
                 }
             }
@@ -505,11 +592,23 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": ""
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -551,8 +650,20 @@ var doc = `{
                             }
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -594,11 +705,23 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "202": {
                         "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -638,11 +761,23 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "202": {
                         "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -680,11 +815,23 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "202": {
                         "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -725,6 +872,35 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/google": {
+            "get": {
+                "description": "Sign up/in with Google",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Token"
+                ],
+                "summary": "Google Login",
+                "responses": {
+                    "307": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
                     }
                 }
             }
@@ -757,6 +933,12 @@ var doc = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
@@ -819,9 +1001,6 @@ var doc = `{
                 },
                 "phone": {
                     "type": "string"
-                },
-                "uid": {
-                    "type": "string"
                 }
             }
         },
@@ -875,7 +1054,7 @@ var doc = `{
                 "id": {
                     "type": "string"
                 },
-                "lang_id": {
+                "lang_iso": {
                     "type": "string"
                 },
                 "name": {
@@ -886,7 +1065,7 @@ var doc = `{
         "dto.WordGroupCreate": {
             "type": "object",
             "properties": {
-                "lang_id": {
+                "lang_iso": {
                     "type": "string"
                 },
                 "name": {

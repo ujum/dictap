@@ -14,7 +14,9 @@ type UserUpdate struct {
 }
 
 type UserCreate struct {
-	User
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Phone     string `json:"phone"`
 	Password  string `json:"password"`
 	OAuthUser bool   `json:"-" swaggerignore:"true"`
 }

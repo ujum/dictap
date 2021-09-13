@@ -3,12 +3,12 @@ package mongo
 import (
 	"context"
 	"github.com/ujum/dictap/internal/domain"
+	derr "github.com/ujum/dictap/internal/error"
 	"github.com/ujum/dictap/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 	"time"
 )
 
@@ -29,8 +29,8 @@ func (wr *WordRepoMongo) AddToGroup(ctx context.Context, name string, groupID st
 	if err != nil {
 		return err
 	}
-	_, err = wr.collection.UpdateOne(ctx, bson.M{"name": name},
-		bson.M{"$push": bson.M{"groups": bson.M{"group_id": groupIDHEx, "added_at": bsonx.Time(time.Now())}}})
+	wg := &domain.WG{GroupID: groupIDHEx, AddedAt: time.Now()}
+	_, err = wr.collection.UpdateOne(ctx, bson.M{"name": name}, bson.M{"$push": bson.M{"groups": wg}})
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (wr *WordRepoMongo) FindByName(ctx context.Context, name string) (*domain.W
 
 	if err := result.Decode(word); err != nil {
 		if err == mongo.ErrNoDocuments {
-			err = domain.ErrNotFound
+			err = derr.ErrNotFound
 		}
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (wr *WordRepoMongo) FindByNameAndGroup(ctx context.Context, wordName string
 
 	if err := result.Decode(word); err != nil {
 		if err == mongo.ErrNoDocuments {
-			err = domain.ErrNotFound
+			err = derr.ErrNotFound
 		}
 		return nil, err
 	}

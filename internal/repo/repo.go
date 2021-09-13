@@ -9,6 +9,12 @@ import (
 	"github.com/ujum/dictap/pkg/logger"
 )
 
+const (
+	usersCollection  = "users"
+	wordsCollection  = "words"
+	groupsCollection = "groups"
+)
+
 type Repositories struct {
 	UserRepo      UserRepo
 	WordRepo      WordRepo
@@ -43,8 +49,8 @@ type WordGroupRepo interface {
 func New(cfg *config.Config, log logger.Logger, clients *client.Clients) *Repositories {
 	mongoDatabase := clients.Mongo.Client.Database(cfg.Datasource.Mongo.Database)
 	return &Repositories{
-		UserRepo:      mongo.NewUserRepoMongo(cfg, log, mongoDatabase.Collection("users")),
-		WordRepo:      mongo.NewWordRepoMongo(log, mongoDatabase.Collection("words")),
-		WordGroupRepo: mongo.NewWordGroupRepoMongo(log, mongoDatabase.Collection("groups")),
+		UserRepo:      mongo.NewUserRepoMongo(log, mongoDatabase.Collection(usersCollection)),
+		WordRepo:      mongo.NewWordRepoMongo(log, mongoDatabase.Collection(wordsCollection)),
+		WordGroupRepo: mongo.NewWordGroupRepoMongo(log, mongoDatabase.Collection(groupsCollection)),
 	}
 }

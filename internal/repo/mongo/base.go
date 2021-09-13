@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"context"
-	"github.com/ujum/dictap/internal/domain"
+	derr "github.com/ujum/dictap/internal/error"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -10,7 +10,7 @@ import (
 func create(ctx context.Context, collection *mongo.Collection, domainType interface{}) (string, error) {
 	createdDomain, err := collection.InsertOne(ctx, domainType)
 	if mongo.IsDuplicateKeyError(err) {
-		return "", domain.ErrAlreadyExists
+		return "", derr.ErrAlreadyExists
 	}
 	return createdDomain.InsertedID.(primitive.ObjectID).Hex(), nil
 }

@@ -22,6 +22,7 @@ server:
           tokenURL: "https://oauth2.googleapis.com/token"
           authStyle: 1
       userInfoURL: "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
+      redirectOnErrorURL: "/"
 datasource:
   mongo:
     host: localhost

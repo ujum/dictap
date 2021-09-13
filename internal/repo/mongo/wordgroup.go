@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jinzhu/copier"
 	"github.com/ujum/dictap/internal/domain"
+	derr "github.com/ujum/dictap/internal/error"
 	"github.com/ujum/dictap/pkg/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,14 +16,9 @@ type WordGroupRepoMongo struct {
 	collection *mongo.Collection
 }
 
-func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error) {
-	langIDHex, err := primitive.ObjectIDFromHex(langID)
-	if err != nil {
-		return nil, err
-	}
+func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langISO string, userUID string) ([]*domain.WordGroup, error) {
 	var wgs []*domain.WordGroup
-
-	cursor, err := wgr.collection.Find(ctx, bson.M{"user_uid": userUID, "lang_id": langIDHex})
+	cursor, err := wgr.collection.Find(ctx, bson.M{"user_uid": userUID, "lang_iso": langISO})
 	if err != nil {
 		wgr.log.Errorf("can't find word groups by user, reason: %v", err)
 		return wgs, err
@@ -44,7 +40,7 @@ func (wgr *WordGroupRepoMongo) FindByIDAndUser(ctx context.Context, groupID stri
 	result := wgr.collection.FindOne(ctx, bson.M{"_id": groupIDHEx, "user_uid": userUID})
 	if err := result.Decode(wg); err != nil {
 		if err == mongo.ErrNoDocuments {
-			err = domain.ErrNotFound
+			err = derr.ErrNotFound
 		}
 		return nil, err
 	}
@@ -58,18 +54,13 @@ func NewWordGroupRepoMongo(log logger.Logger, collection *mongo.Collection) *Wor
 	}
 }
 
-func (wgr *WordGroupRepoMongo) FindByLangAndUser(ctx context.Context, langID string, userUID string, def bool) (*domain.WordGroup, error) {
-	langIDHEx, err := primitive.ObjectIDFromHex(langID)
-	if err != nil {
-		return nil, err
-	}
-
+func (wgr *WordGroupRepoMongo) FindByLangAndUser(ctx context.Context, langISO string, userUID string, def bool) (*domain.WordGroup, error) {
 	wg := &domain.WordGroup{}
-	result := wgr.collection.FindOne(ctx, bson.M{"lang_id": langIDHEx, "user_uid": userUID, "default": def})
+	result := wgr.collection.FindOne(ctx, bson.M{"lang_iso": langISO, "user_uid": userUID, "default": def})
 
 	if err := result.Decode(wg); err != nil {
 		if err == mongo.ErrNoDocuments {
-			err = domain.ErrNotFound
+			err = derr.ErrNotFound
 		}
 		return nil, err
 	}
@@ -82,7 +73,6 @@ func (wgr *WordGroupRepoMongo) Create(ctx context.Context, wordGroup *domain.Wor
 	if err != nil {
 		return "", err
 	}
-	wgm.LangID, err = primitive.ObjectIDFromHex(wordGroup.LangID)
 	if err != nil {
 		return "", err
 	}
