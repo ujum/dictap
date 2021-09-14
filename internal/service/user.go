@@ -79,6 +79,9 @@ func (us *UserServiceImpl) Create(ctx context.Context, userDTO *dto.UserCreate) 
 	}
 	user.RegisteredAt = time.Now()
 	user.UID = uuid.New().String()
+	if len(user.LangBinding) > 0 {
+		user.LangBinding[0].Active = true
+	}
 	_, err := us.userRepo.Create(ctx, user)
 	return user.UID, err
 }

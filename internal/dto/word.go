@@ -1,8 +1,10 @@
 package dto
 
+import "time"
+
 type Word struct {
-	Name    string `json:"name"`
-	AddedAt string `json:"added_at"`
+	Name    string    `json:"name"`
+	AddedAt time.Time `json:"added_at"`
 }
 
 type WordCreate struct {
@@ -13,16 +15,4 @@ type WordCreate struct {
 type WordGroupMovement struct {
 	FromGroupID string `json:"from_group_id"`
 	ToGroupID   string `json:"to_group_id"`
-}
-
-type WordGroup struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	LangISO string `json:"lang_iso"`
-}
-
-type WordGroupCreate struct {
-	Name    string `json:"name"`
-	LangISO string `json:"lang_iso"`
-	UserUID string `json:"-" swaggerignore:"true"`
 }

@@ -88,25 +88,33 @@ func (handler *Handler) getWordGroup(ctx iris.Context) {
 // @Summary List word groups for language
 // @Tags WordGroups
 // @Description Get all word groups for language
-// @Param iso path string true "language iso code"
+// @Param from_iso path string true "from language iso code"
+// @Param to_iso path string true "to language iso code"
 // @Produce  json
 // @Success 200 {array} dto.WordGroup
 // @Failure 400 {object} errResponse
 // @Failure 500 {object} errResponse
 // @Security ApiKeyAuth
-// @Router /api/v1/wordgroups/langs/{iso} [get]
+// @Router /api/v1/wordgroups/langs/{from_iso}/{to_iso} [get]
 func (handler *Handler) getWordGroupsByLang(ctx iris.Context) {
-	langISO := ctx.Params().Get("iso")
-	if langISO == "" {
-		badRequestResponse(ctx, errors.New("param iso not provided"))
+	fromISO := ctx.Params().Get("from_iso")
+	if fromISO == "" {
+		badRequestResponse(ctx, errors.New("param from_iso not provided"))
 		return
 	}
+	toISO := ctx.Params().Get("to_iso")
+	if toISO == "" {
+		badRequestResponse(ctx, errors.New("param to_iso not provided"))
+		return
+	}
+	langBinding := &dto.LangBinding{LangFromISO: fromISO, LangToISO: toISO}
+
 	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
-	wordGroups, err := handler.services.WordGroupService.GetAllByLangAndUser(api.RequestContext(ctx), langISO, userUID)
+	wordGroups, err := handler.services.WordGroupService.GetAllByLangAndUser(api.RequestContext(ctx), langBinding, userUID)
 	if err := err; err != nil {
 		serverErrorResponse(ctx, err)
 		return
@@ -123,26 +131,34 @@ func (handler *Handler) getWordGroupsByLang(ctx iris.Context) {
 // @Summary Get default word group for language
 // @Tags WordGroups
 // @Description Get word group for language
-// @Param iso path string true "lang iso code"
+// @Param from_iso path string true "from lang iso code"
+// @Param to_iso path string true "to lang iso code"
 // @Produce  json
 // @Success 200 {object} dto.WordGroup
 // @Failure 400 {object} errResponse
 // @Failure 404
 // @Failure 500 {object} errResponse
 // @Security ApiKeyAuth
-// @Router /api/v1/wordgroups/langs/{iso}/default [get]
+// @Router /api/v1/wordgroups/langs/{from_iso}/{to_iso}/default [get]
 func (handler *Handler) getDefaultWordGroupByLang(ctx iris.Context) {
-	langISO := ctx.Params().Get("iso")
-	if langISO == "" {
-		badRequestResponse(ctx, errors.New("param iso not provided"))
+	fromISO := ctx.Params().Get("from_iso")
+	if fromISO == "" {
+		badRequestResponse(ctx, errors.New("param from_iso not provided"))
 		return
 	}
+	toISO := ctx.Params().Get("to_iso")
+	if toISO == "" {
+		badRequestResponse(ctx, errors.New("param to_iso not provided"))
+		return
+	}
+	langBinding := &dto.LangBinding{LangFromISO: fromISO, LangToISO: toISO}
+
 	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)
 		return
 	}
-	wordGroup, err := handler.services.WordGroupService.GetDefault(api.RequestContext(ctx), langISO, userUID)
+	wordGroup, err := handler.services.WordGroupService.GetDefault(api.RequestContext(ctx), langBinding, userUID)
 	if err := err; err != nil {
 		if err == derr.ErrNotFound {
 			notFoundResponse(ctx, wordGroupNotFoundMsg)

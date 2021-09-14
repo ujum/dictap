@@ -119,14 +119,14 @@ var doc = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Change self user password",
+                "description": "Change user password",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Users"
                 ],
-                "summary": "Change self user password",
+                "summary": "Change user password",
                 "parameters": [
                     {
                         "description": "Change user password dto",
@@ -306,64 +306,6 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/users/{uid}/pass": {
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Change user password",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Change user password",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User uid",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Change user password dto",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.ChangeUserPassword"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": ""
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.errResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/v1.errResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.errResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/wordgroups": {
             "post": {
                 "security": [
@@ -412,7 +354,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/wordgroups/langs/{iso}": {
+        "/api/v1/wordgroups/langs/{from_iso}/{to_iso}": {
             "get": {
                 "security": [
                     {
@@ -430,8 +372,15 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "language iso code",
-                        "name": "iso",
+                        "description": "from language iso code",
+                        "name": "from_iso",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to language iso code",
+                        "name": "to_iso",
                         "in": "path",
                         "required": true
                     }
@@ -461,7 +410,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/wordgroups/langs/{iso}/default": {
+        "/api/v1/wordgroups/langs/{from_iso}/{to_iso}/default": {
             "get": {
                 "security": [
                     {
@@ -479,8 +428,15 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "lang iso code",
-                        "name": "iso",
+                        "description": "from lang iso code",
+                        "name": "from_iso",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to lang iso code",
+                        "name": "to_iso",
                         "in": "path",
                         "required": true
                     }
@@ -959,6 +915,31 @@ var doc = `{
                 }
             }
         },
+        "dto.LangBinding": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "lang_from_iso": {
+                    "type": "string"
+                },
+                "lang_to_iso": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LangBindingCreate": {
+            "type": "object",
+            "properties": {
+                "lang_from_iso": {
+                    "type": "string"
+                },
+                "lang_to_iso": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TokenDTO": {
             "type": "object",
             "properties": {
@@ -976,8 +957,17 @@ var doc = `{
                 "email": {
                     "type": "string"
                 },
+                "lang_binding": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.LangBinding"
+                    }
+                },
                 "name": {
                     "type": "string"
+                },
+                "oauth_user": {
+                    "type": "boolean"
                 },
                 "phone": {
                     "type": "string"
@@ -992,6 +982,12 @@ var doc = `{
             "properties": {
                 "email": {
                     "type": "string"
+                },
+                "lang_binding": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.LangBindingCreate"
+                    }
                 },
                 "name": {
                     "type": "string"
@@ -1018,6 +1014,12 @@ var doc = `{
         "dto.UserUpdate": {
             "type": "object",
             "properties": {
+                "lang_binding": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.LangBinding"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1054,8 +1056,8 @@ var doc = `{
                 "id": {
                     "type": "string"
                 },
-                "lang_iso": {
-                    "type": "string"
+                "lang_binding": {
+                    "$ref": "#/definitions/dto.LangBinding"
                 },
                 "name": {
                     "type": "string"
@@ -1065,8 +1067,8 @@ var doc = `{
         "dto.WordGroupCreate": {
             "type": "object",
             "properties": {
-                "lang_iso": {
-                    "type": "string"
+                "lang_binding": {
+                    "$ref": "#/definitions/dto.LangBinding"
                 },
                 "name": {
                     "type": "string"

@@ -16,9 +16,9 @@ type WordGroupRepoMongo struct {
 	collection *mongo.Collection
 }
 
-func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langISO string, userUID string) ([]*domain.WordGroup, error) {
+func (wgr *WordGroupRepoMongo) FindAllByLangAndUser(ctx context.Context, langBinding *domain.LangBinding, userUID string) ([]*domain.WordGroup, error) {
 	var wgs []*domain.WordGroup
-	cursor, err := wgr.collection.Find(ctx, bson.M{"user_uid": userUID, "lang_iso": langISO})
+	cursor, err := wgr.collection.Find(ctx, bson.M{"user_uid": userUID, "lang_binding": langBinding})
 	if err != nil {
 		wgr.log.Errorf("can't find word groups by user, reason: %v", err)
 		return wgs, err
@@ -54,9 +54,9 @@ func NewWordGroupRepoMongo(log logger.Logger, collection *mongo.Collection) *Wor
 	}
 }
 
-func (wgr *WordGroupRepoMongo) FindByLangAndUser(ctx context.Context, langISO string, userUID string, def bool) (*domain.WordGroup, error) {
+func (wgr *WordGroupRepoMongo) FindByLangAndUser(ctx context.Context, langBinding *domain.LangBinding, userUID string, def bool) (*domain.WordGroup, error) {
 	wg := &domain.WordGroup{}
-	result := wgr.collection.FindOne(ctx, bson.M{"lang_iso": langISO, "user_uid": userUID, "default": def})
+	result := wgr.collection.FindOne(ctx, bson.M{"lang_binding": langBinding, "user_uid": userUID, "default": def})
 
 	if err := result.Decode(wg); err != nil {
 		if err == mongo.ErrNoDocuments {

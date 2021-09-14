@@ -7,6 +7,22 @@ definitions:
       password:
         type: string
     type: object
+  dto.LangBinding:
+    properties:
+      active:
+        type: boolean
+      lang_from_iso:
+        type: string
+      lang_to_iso:
+        type: string
+    type: object
+  dto.LangBindingCreate:
+    properties:
+      lang_from_iso:
+        type: string
+      lang_to_iso:
+        type: string
+    type: object
   dto.TokenDTO:
     properties:
       access_token:
@@ -18,8 +34,14 @@ definitions:
     properties:
       email:
         type: string
+      lang_binding:
+        items:
+          $ref: '#/definitions/dto.LangBinding'
+        type: array
       name:
         type: string
+      oauth_user:
+        type: boolean
       phone:
         type: string
       uid:
@@ -29,6 +51,10 @@ definitions:
     properties:
       email:
         type: string
+      lang_binding:
+        items:
+          $ref: '#/definitions/dto.LangBindingCreate'
+        type: array
       name:
         type: string
       password:
@@ -45,6 +71,10 @@ definitions:
     type: object
   dto.UserUpdate:
     properties:
+      lang_binding:
+        items:
+          $ref: '#/definitions/dto.LangBinding'
+        type: array
       name:
         type: string
       phone:
@@ -68,15 +98,15 @@ definitions:
     properties:
       id:
         type: string
-      lang_iso:
-        type: string
+      lang_binding:
+        $ref: '#/definitions/dto.LangBinding'
       name:
         type: string
     type: object
   dto.WordGroupCreate:
     properties:
-      lang_iso:
-        type: string
+      lang_binding:
+        $ref: '#/definitions/dto.LangBinding'
       name:
         type: string
     type: object
@@ -247,15 +277,10 @@ paths:
       summary: Update user
       tags:
       - Users
-  /api/v1/users/{uid}/pass:
+  /api/v1/users/pass:
     put:
       description: Change user password
       parameters:
-      - description: User uid
-        in: path
-        name: uid
-        required: true
-        type: string
       - description: Change user password dto
         in: body
         name: user
@@ -282,38 +307,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Change user password
-      tags:
-      - Users
-  /api/v1/users/pass:
-    put:
-      description: Change self user password
-      parameters:
-      - description: Change user password dto
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/dto.ChangeUserPassword'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.errResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/v1.errResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.errResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Change self user password
       tags:
       - Users
   /api/v1/wordgroups:
@@ -379,13 +372,18 @@ paths:
       summary: Word group by id
       tags:
       - WordGroups
-  /api/v1/wordgroups/langs/{iso}:
+  /api/v1/wordgroups/langs/{from_iso}/{to_iso}:
     get:
       description: Get all word groups for language
       parameters:
-      - description: language iso code
+      - description: from language iso code
         in: path
-        name: iso
+        name: from_iso
+        required: true
+        type: string
+      - description: to language iso code
+        in: path
+        name: to_iso
         required: true
         type: string
       produces:
@@ -410,13 +408,18 @@ paths:
       summary: List word groups for language
       tags:
       - WordGroups
-  /api/v1/wordgroups/langs/{iso}/default:
+  /api/v1/wordgroups/langs/{from_iso}/{to_iso}/default:
     get:
       description: Get word group for language
       parameters:
-      - description: lang iso code
+      - description: from lang iso code
         in: path
-        name: iso
+        name: from_iso
+        required: true
+        type: string
+      - description: to lang iso code
+        in: path
+        name: to_iso
         required: true
         type: string
       produces:

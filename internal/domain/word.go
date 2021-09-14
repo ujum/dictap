@@ -11,22 +11,7 @@ type WG struct {
 }
 
 type Word struct {
-	ID   string `bson:"_id,omitempty"`
-	Name string `bson:"name"`
-}
-
-type WordGroupMongo struct {
-	ID      primitive.ObjectID `bson:"_id,omitempty"`
-	UserUID string             `bson:"user_uid"`
-	LangISO string             `bson:"lang_iso"`
-	Name    string             `bson:"name"`
-	Default bool               `bson:"default"`
-}
-
-type WordGroup struct {
-	ID      string `bson:"_id,omitempty"`
-	UserUID string `bson:"user_uid"`
-	Name    string `bson:"name"`
-	LangISO string `bson:"lang_iso"`
-	Default bool   `bson:"default"`
+	ID      string    `bson:"_id,omitempty"`
+	Name    string    `bson:"name"`
+	AddedAt time.Time `bson:"added_at"`
 }

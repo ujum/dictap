@@ -53,7 +53,6 @@ func (handler *Handler) routeV1(app *iris.Application) {
 			userGroup.Put("/{uid}", handler.updateUser)
 			userGroup.Delete("/{uid}", handler.deleteUser)
 			userGroup.Put("/{uid}/pass", handler.changeUserPass)
-			userGroup.Put("/pass", handler.changeSelfUserPass)
 		}
 		wordGroup := v1Group.Party("/words")
 		{
@@ -66,10 +65,10 @@ func (handler *Handler) routeV1(app *iris.Application) {
 		}
 		wordGroupGroup := v1Group.Party("/wordgroups")
 		{
-			wordGroupGroup.Get("/langs/{iso}", handler.getWordGroupsByLang)
+			wordGroupGroup.Get("/langs/{from_iso}/{to_iso}", handler.getWordGroupsByLang)
 			wordGroupGroup.Post("/", handler.createWordGroup)
 			wordGroupGroup.Get("/{gid}", handler.getWordGroup)
-			wordGroupGroup.Get("/langs/{iso}/default", handler.getDefaultWordGroupByLang)
+			wordGroupGroup.Get("/langs/{from_iso}/{to_iso}/default", handler.getDefaultWordGroupByLang)
 		}
 	}
 }

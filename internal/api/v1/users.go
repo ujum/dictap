@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"errors"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"github.com/ujum/dictap/internal/api"
@@ -166,42 +165,6 @@ func (handler *Handler) deleteUser(ctx iris.Context) {
 // @Tags Users
 // @Description Change user password
 // @Produce  json
-// @Param uid path string true "User uid"
-// @Param user body dto.ChangeUserPassword true "Change user password dto"
-// @Success 200
-// @Failure 400 {object} errResponse
-// @Failure 404 {object} errResponse
-// @Failure 500 {object} errResponse
-// @Security ApiKeyAuth
-// @Router /api/v1/users/{uid}/pass [put]
-func (handler *Handler) changeUserPass(ctx iris.Context) {
-	uid := ctx.Params().Get("uid")
-	if uid == "" {
-		badRequestResponse(ctx, errors.New("param uid not provided"))
-		return
-	}
-	change := &dto.ChangeUserPassword{}
-	if err := ctx.ReadJSON(change); err != nil {
-		badRequestResponse(ctx, err)
-		return
-	}
-	err := handler.services.UserService.ChangePassword(api.RequestContext(ctx), uid, change)
-	if err != nil {
-		if err == derr.ErrNotFound {
-			notFoundResponse(ctx, userNotFoundMsg)
-			return
-		}
-		serverErrorResponse(ctx, err)
-		return
-	}
-	ctx.StopWithStatus(http.StatusOK)
-}
-
-// changeSelfUserPass godoc
-// @Summary Change self user password
-// @Tags Users
-// @Description Change self user password
-// @Produce  json
 // @Param user body dto.ChangeUserPassword true "Change user password dto"
 // @Success 200
 // @Failure 400 {object} errResponse
@@ -209,7 +172,7 @@ func (handler *Handler) changeUserPass(ctx iris.Context) {
 // @Failure 500 {object} errResponse
 // @Security ApiKeyAuth
 // @Router /api/v1/users/pass [put]
-func (handler *Handler) changeSelfUserPass(ctx iris.Context) {
+func (handler *Handler) changeUserPass(ctx iris.Context) {
 	uid, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)

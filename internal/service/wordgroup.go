@@ -11,9 +11,9 @@ import (
 
 type WordGroupService interface {
 	Create(ctx context.Context, wordGroupDTO *dto.WordGroupCreate) (string, error)
-	GetDefault(ctx context.Context, langID string, userUID string) (*domain.WordGroup, error)
+	GetDefault(ctx context.Context, langBinding *dto.LangBinding, userUID string) (*domain.WordGroup, error)
 	GetByIDAndUser(ctx context.Context, groupID string, userUID string) (*domain.WordGroup, error)
-	GetAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error)
+	GetAllByLangAndUser(ctx context.Context, langBinding *dto.LangBinding, userUID string) ([]*domain.WordGroup, error)
 }
 
 func newWordGroupService(repos *repo.Repositories, appLogger logger.Logger) *WordGroupServiceImpl {
@@ -32,12 +32,15 @@ func (wgs *WordGroupServiceImpl) GetByIDAndUser(ctx context.Context, groupID str
 	return wgs.wordGroupRepo.FindByIDAndUser(ctx, groupID, userUID)
 }
 
-func (wgs *WordGroupServiceImpl) GetDefault(ctx context.Context, langISO string, userUID string) (*domain.WordGroup, error) {
-	return wgs.wordGroupRepo.FindByLangAndUser(ctx, langISO, userUID, true)
+func (wgs *WordGroupServiceImpl) GetDefault(ctx context.Context, langBindingDTO *dto.LangBinding, userUID string) (*domain.WordGroup, error) {
+	langBinding := &domain.LangBinding{LangFromISO: langBindingDTO.LangFromISO, LangToISO: langBindingDTO.LangToISO}
+
+	return wgs.wordGroupRepo.FindByLangAndUser(ctx, langBinding, userUID, true)
 }
 
-func (wgs *WordGroupServiceImpl) GetAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error) {
-	return wgs.wordGroupRepo.FindAllByLangAndUser(ctx, langID, userUID)
+func (wgs *WordGroupServiceImpl) GetAllByLangAndUser(ctx context.Context, langBindingDTO *dto.LangBinding, userUID string) ([]*domain.WordGroup, error) {
+	langBinding := &domain.LangBinding{LangFromISO: langBindingDTO.LangFromISO, LangToISO: langBindingDTO.LangToISO}
+	return wgs.wordGroupRepo.FindAllByLangAndUser(ctx, langBinding, userUID)
 }
 
 func (wgs *WordGroupServiceImpl) Create(ctx context.Context, wordGroupDTO *dto.WordGroupCreate) (string, error) {

@@ -42,8 +42,8 @@ type WordRepo interface {
 type WordGroupRepo interface {
 	Create(ctx context.Context, word *domain.WordGroup) (string, error)
 	FindByIDAndUser(ctx context.Context, groupID string, userUID string) (*domain.WordGroup, error)
-	FindByLangAndUser(ctx context.Context, langID string, userUID string, def bool) (*domain.WordGroup, error)
-	FindAllByLangAndUser(ctx context.Context, langID string, userUID string) ([]*domain.WordGroup, error)
+	FindByLangAndUser(ctx context.Context, langBinding *domain.LangBinding, userUID string, def bool) (*domain.WordGroup, error)
+	FindAllByLangAndUser(ctx context.Context, langBinding *domain.LangBinding, userUID string) ([]*domain.WordGroup, error)
 }
 
 func New(cfg *config.Config, log logger.Logger, clients *client.Clients) *Repositories {
