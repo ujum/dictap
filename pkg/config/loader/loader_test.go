@@ -18,16 +18,94 @@ type ConfigPart struct {
 
 type ConfigTestParam struct {
 	name         string
+	resultConfig interface{}
 	loadSettings *LoadSettings
 	env          map[string]string
 	want         *Config
 	wantErr      bool
 }
 
+func TestErrorCases(t *testing.T) {
+	runTests(t, []ConfigTestParam{
+		{
+			name:         "emptyConfigDir",
+			resultConfig: &Config{},
+			loadSettings: &LoadSettings{ConfigFile: &ConfigFileSettings{
+				ConfigDir: "",
+			}},
+			wantErr: true,
+		},
+		{
+			name:         "nilConfigFileSettings",
+			resultConfig: &Config{},
+			loadSettings: &LoadSettings{},
+			wantErr:      true,
+		},
+		{
+			name:         "nilLoadSettings",
+			resultConfig: &Config{},
+			wantErr:      true,
+		},
+		{
+			name: "nonPointerConfigStruct",
+			loadSettings: &LoadSettings{ConfigFile: &ConfigFileSettings{
+				ConfigDir: "./testdata/noprofiles",
+			}},
+			resultConfig: Config{},
+			wantErr:      true,
+		},
+		{
+			name: "nilConfigStruct",
+			loadSettings: &LoadSettings{ConfigFile: &ConfigFileSettings{
+				ConfigDir: "./testdata/noprofiles",
+			}},
+			resultConfig: nil,
+			wantErr:      true,
+		},
+		{
+			name: "baseConfigFileNotExist",
+			loadSettings: &LoadSettings{ConfigFile: &ConfigFileSettings{
+				ConfigDir: "/notexistsdir",
+			}},
+			wantErr: true,
+		},
+		{
+			name: "profileConfigFileNotExist",
+			loadSettings: &LoadSettings{
+				ConfigFile: &ConfigFileSettings{
+					ConfigDir: "./testdata/noprofiles",
+				},
+			},
+			env:     map[string]string{"APP_PROFILE": "stage"},
+			wantErr: true,
+		},
+		{
+			name: "invalidBaseConfig",
+			loadSettings: &LoadSettings{
+				ConfigFile: &ConfigFileSettings{
+					ConfigType: "toml",
+					ConfigDir:  "./testdata/invalidbaseconfig",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalidProfileConfig",
+			loadSettings: &LoadSettings{
+				ConfigFile: &ConfigFileSettings{
+					ConfigType: "toml",
+					ConfigDir:  "./testdata/invalidprofileconfig",
+				},
+			},
+			wantErr: true,
+		}})
+}
+
 func TestLoadFromFile(t *testing.T) {
 	tests := []ConfigTestParam{
 		{
-			name: "file config",
+			name:         "file config",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				ConfigFile: &ConfigFileSettings{
 					ConfigDir: "./testdata/noprofiles",
@@ -39,7 +117,8 @@ func TestLoadFromFile(t *testing.T) {
 			},
 		},
 		{
-			name: "file config",
+			name:         "file config",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				ConfigFile: &ConfigFileSettings{
 					ConfigDir:      "./testdata/noprofiles/prefix",
@@ -52,7 +131,8 @@ func TestLoadFromFile(t *testing.T) {
 			},
 		},
 		{
-			name: "file config with profile set by base file",
+			name:         "file config with profile set by base file",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				ConfigFile: &ConfigFileSettings{
 					ConfigDir: "./testdata/profiles",
@@ -64,7 +144,8 @@ func TestLoadFromFile(t *testing.T) {
 			},
 		},
 		{
-			name: "file config with profile set by base file and env (env should override file)",
+			name:         "file config with profile set by base file and env (env should override file)",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				ConfigFile: &ConfigFileSettings{
 					ConfigDir: "./testdata/profiles",
@@ -77,7 +158,8 @@ func TestLoadFromFile(t *testing.T) {
 			},
 		},
 		{
-			name: "file config with prefix",
+			name:         "file config with prefix",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				ConfigFile: &ConfigFileSettings{
 					ConfigDir:      "./testdata/profiles/prefix",
@@ -90,7 +172,8 @@ func TestLoadFromFile(t *testing.T) {
 			},
 		},
 		{
-			name: "file config with profile and prefix",
+			name:         "file config with profile and prefix",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				ConfigFile: &ConfigFileSettings{
 					ConfigDir:      "./testdata/profiles/prefix",
@@ -111,7 +194,8 @@ func TestLoadFromFile(t *testing.T) {
 func TestLoadFromFileAndEnv(t *testing.T) {
 	tests := []ConfigTestParam{
 		{
-			name: "env without prefix",
+			name:         "env without prefix",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				LoadSysEnv: true,
 				ConfigFile: &ConfigFileSettings{
@@ -125,7 +209,8 @@ func TestLoadFromFileAndEnv(t *testing.T) {
 			},
 		},
 		{
-			name: "env with prefix",
+			name:         "env with prefix",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				LoadSysEnv: true,
 				EnvPrefix:  "app",
@@ -140,7 +225,8 @@ func TestLoadFromFileAndEnv(t *testing.T) {
 			},
 		},
 		{
-			name: "env without prefix and profile from file",
+			name:         "env without prefix and profile from file",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				LoadSysEnv: true,
 				ConfigFile: &ConfigFileSettings{
@@ -154,7 +240,8 @@ func TestLoadFromFileAndEnv(t *testing.T) {
 			},
 		},
 		{
-			name: "env with prefix and profile from file",
+			name:         "env with prefix and profile from file",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				LoadSysEnv: true,
 				EnvPrefix:  "app",
@@ -169,7 +256,8 @@ func TestLoadFromFileAndEnv(t *testing.T) {
 			},
 		},
 		{
-			name: "env without prefix and profile from env",
+			name:         "env without prefix and profile from env",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				LoadSysEnv: true,
 				ConfigFile: &ConfigFileSettings{
@@ -183,7 +271,8 @@ func TestLoadFromFileAndEnv(t *testing.T) {
 			},
 		},
 		{
-			name: "env with prefix and profile from env",
+			name:         "env with prefix and profile from env",
+			resultConfig: &Config{},
 			loadSettings: &LoadSettings{
 				LoadSysEnv: true,
 				EnvPrefix:  "myapp",
@@ -211,13 +300,14 @@ func runTests(t *testing.T, tests []ConfigTestParam) {
 					t.Errorf("cant set env var: [key: %s, val: %s]", k, v)
 				}
 			}
-			config := &Config{}
 			fmt.Println()
+			config := test.resultConfig
 			err := Load(config, test.loadSettings)
 			if test.wantErr {
 				if err == nil {
 					t.Error("want error")
 				}
+				return
 			}
 			if !reflect.DeepEqual(config, test.want) {
 				t.Errorf("got = %+v, want %+v", config, test.want)

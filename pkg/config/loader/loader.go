@@ -1,6 +1,7 @@
 package loader
 
 import (
+	"errors"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -30,14 +31,21 @@ type ConfigFileSettings struct {
 // Env variables override file vars (can't set without in file vars defining)
 func Load(configStruct interface{}, loadSettings *LoadSettings) error {
 	v := viper.New()
-	if loadSettings.ConfigFile != nil {
-		v.SetConfigType(loadSettings.ConfigFile.ConfigType)
-		v.AddConfigPath(getConfigDir(loadSettings))
-		mergeCommonConfig(v, loadSettings.ConfigFile)
-		getProfileName(loadSettings, v)
-		mergeAppProfileConfig(v, getProfileName(loadSettings, v), loadSettings.ConfigFile)
+	if loadSettings == nil {
+		return errors.New("loadSettings is nil")
 	}
-
+	if loadSettings.ConfigFile == nil {
+		return errors.New("config file settings is nil")
+	}
+	v.SetConfigType(loadSettings.ConfigFile.ConfigType)
+	v.AddConfigPath(getConfigDir(loadSettings))
+	if err := mergeCommonConfig(v, loadSettings.ConfigFile); err != nil {
+		return err
+	}
+	profileName := getProfileName(loadSettings, v)
+	if err := mergeAppProfileConfig(v, profileName, loadSettings.ConfigFile); err != nil {
+		return err
+	}
 	if loadSettings.LoadSysEnv {
 		mergeSystemEnvConfig(v, loadSettings.EnvPrefix)
 	}
@@ -49,18 +57,19 @@ func Load(configStruct interface{}, loadSettings *LoadSettings) error {
 }
 
 // merge common(base) config file to config struct
-func mergeCommonConfig(v *viper.Viper, fileSettings *ConfigFileSettings) {
+func mergeCommonConfig(v *viper.Viper, fileSettings *ConfigFileSettings) error {
 	const baseConfigName = "base"
 	v.SetConfigName(resolveFileName(fileSettings.FileNamePrefix, baseConfigName))
 	if err := v.MergeInConfig(); err != nil {
 		log.Printf("%v", err)
-		return
+		return err
 	}
 	log.Printf("loaded %s config (%s)", baseConfigName, v.ConfigFileUsed())
+	return nil
 }
 
 // merge app profile config file to config struct
-func mergeAppProfileConfig(v *viper.Viper, profile string, fileSettings *ConfigFileSettings) {
+func mergeAppProfileConfig(v *viper.Viper, profile string, fileSettings *ConfigFileSettings) error {
 	if profile != "" {
 		v.SetConfigName(resolveFileName(fileSettings.FileNamePrefix, profile))
 		if err := v.MergeInConfig(); err != nil {
@@ -69,10 +78,11 @@ func mergeAppProfileConfig(v *viper.Viper, profile string, fileSettings *ConfigF
 			} else {
 				log.Printf("%+v", err)
 			}
-			return
+			return err
 		}
 		log.Printf("loaded %s profile config (%s)", profile, v.ConfigFileUsed())
 	}
+	return nil
 }
 
 // merge system environment variables to config struct
