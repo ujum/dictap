@@ -26,6 +26,11 @@ func defaultValue() *Config {
 					UserInfoURL:        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=",
 					RedirectOnErrorURL: "/",
 				},
+				CORS: &CORSConfig{
+					AllowOrigin:  "*",
+					AllowMethods: "*",
+					AllowHeaders: "*",
+				},
 			},
 		},
 		Datasource: &DatasourceConfig{

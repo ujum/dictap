@@ -18,9 +18,16 @@ type Config struct {
 	Datasource *DatasourceConfig
 }
 
+type CORSConfig struct {
+	AllowOrigin  string
+	AllowMethods string
+	AllowHeaders string
+}
+
 type SecurityConfig struct {
 	ApiKeyAuth   *ApiKeyAuthConfig
 	GoogleOAuth2 *OAuthConfig
+	CORS         *CORSConfig
 }
 
 type OAuthConfig struct {

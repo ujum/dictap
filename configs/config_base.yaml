@@ -13,7 +13,7 @@ server:
       config:
         clientID: "some clientID from env"
         clientSecret: "some clientSecret from env"
-        redirectURL: "http://localhost:8080/auth/google/callback"
+        redirectURL: "http://dictup.com:8080/auth/google/callback"
         scopes:
           - "https://www.googleapis.com/auth/userinfo.email"
           - "https://www.googleapis.com/auth/userinfo.profile"
@@ -23,6 +23,10 @@ server:
           authStyle: 1
       userInfoURL: "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
       redirectOnErrorURL: "/"
+    cors:
+      allowOrigin: "*"
+      allowMethods: "*"
+      allowHeaders: "*"
 datasource:
   mongo:
     host: localhost

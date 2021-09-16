@@ -6,11 +6,11 @@ import (
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
-	"github.com/kataras/iris/v12/middleware/requestid"
 	_ "github.com/ujum/dictap/api"
 	"github.com/ujum/dictap/internal/config"
 	"github.com/ujum/dictap/internal/service"
 	"github.com/ujum/dictap/pkg/logger"
+	"net/http"
 )
 
 type Handler struct {
@@ -29,7 +29,7 @@ func NewHandler(log logger.Logger, cfg *config.ServerConfig, services *service.S
 
 func (handler *Handler) RegisterRoutes(app *iris.Application) {
 	handler.routeSwagger(app)
-	app.Use(requestid.New())
+	app.UseRouter(handler.corsMiddleware)
 	handler.routeV1(app)
 }
 
@@ -91,4 +91,15 @@ func (handler *Handler) routeSwagger(app *iris.Application) {
 
 	app.Get("/swagger", swaggerUI)
 	app.Get("/swagger/{any:path}", swaggerUI)
+}
+
+func (handler *Handler) corsMiddleware(ctx *context.Context) {
+	ctx.Header("Access-Control-Allow-Origin", handler.config.Security.CORS.AllowOrigin)
+	ctx.Header("Access-Control-Allow-Methods", handler.config.Security.CORS.AllowMethods)
+	ctx.Header("Access-Control-Allow-Headers", handler.config.Security.CORS.AllowHeaders)
+	if ctx.Request().Method != "OPTIONS" {
+		ctx.Next()
+	} else {
+		ctx.StopWithStatus(http.StatusOK)
+	}
 }
