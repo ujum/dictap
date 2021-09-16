@@ -24,7 +24,7 @@ compile: copy-configs swagger
 	GOOS=windows GOARCH=amd64 go build -o ${BINARY_NAME}-windows-amd64.exe ${SOURCE_MAIN_NAME}
 
 test:
-	go test ./...
+	go test ./... -cover
 
 clean-build:
 	#go clean
@@ -45,3 +45,8 @@ docker-build:
 
 docker-run:
 	 docker run --rm --name dictup --network host dictup
+
+test-cover-report:
+	mkdir -p ${BUILD_DIR}
+	go test ./... -cover -coverprofile=${BUILD_DIR}/test-coverage.out
+	go tool cover -html=${BUILD_DIR}/test-coverage.out -o ${BUILD_DIR}/test-coverage.html
