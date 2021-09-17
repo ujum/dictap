@@ -21,6 +21,7 @@ type UserService interface {
 	DeleteByUid(ctx context.Context, uid string) error
 	GetByCredentials(ctx context.Context, credentials *dto.UserCredentials) (*domain.User, error)
 	ChangePassword(ctx context.Context, uid string, credentials *dto.ChangeUserPassword) error
+	FlagUserAsOAuth(ctx context.Context, user *domain.User) error
 }
 
 type UserServiceImpl struct {
@@ -115,5 +116,10 @@ func (us *UserServiceImpl) ChangePassword(ctx context.Context, uid string, crede
 	if err != nil {
 		return err
 	}
+	return us.userRepo.Update(ctx, user)
+}
+
+func (us *UserServiceImpl) FlagUserAsOAuth(ctx context.Context, user *domain.User) error {
+	user.OAuthUser = true
 	return us.userRepo.Update(ctx, user)
 }

@@ -86,6 +86,11 @@ func (handler *Handler) googleCallback(ctx iris.Context) {
 		ctx.StopWithJSON(http.StatusUnauthorized, &errResponse{Message: err.Error()})
 		return
 	}
+
+	if err = handler.services.UserService.FlagUserAsOAuth(requestContext, user); err != nil {
+		handler.logger.Warnf("can't flag user %s as oauth: %v", user.Email, err)
+	}
+
 	ctx.StopWithJSON(http.StatusOK, tokens)
 
 }
