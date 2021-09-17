@@ -3,6 +3,7 @@ BUILD_DIR=./out
 BINARY_NAME=${BUILD_DIR}/dictup
 SOURCE_MAIN_NAME=./cmd/dictup/main.go
 SWAGGER_SCAN=./internal/server/server.go
+MIGRATION_DIR=migrations
 
 build: copy-configs swagger
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BINARY_NAME} ${SOURCE_MAIN_NAME}
@@ -50,3 +51,9 @@ test-cover-report:
 	mkdir -p ${BUILD_DIR}
 	go test ./... -cover -coverprofile=${BUILD_DIR}/test-coverage.out
 	go tool cover -html=${BUILD_DIR}/test-coverage.out -o ${BUILD_DIR}/test-coverage.html
+
+migrate-up:
+	 docker run --rm --name mig -v $(PWD)/${MIGRATION_DIR}:/${MIGRATION_DIR} --network host migrate/migrate:4 -path=/${MIGRATION_DIR}/mongodb -database mongodb://localhost:27017/dictup up $(version)
+
+migrate-down:
+	 docker run --rm --name mig -v $(PWD)/${MIGRATION_DIR}:/${MIGRATION_DIR} --network host migrate/migrate:4 -path=/${MIGRATION_DIR}/mongodb -database mongodb://localhost:27017/dictup down $(version)

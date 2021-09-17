@@ -1,0 +1,50 @@
+[
+  {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "test1",
+        "uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12",
+        "email": "test1@dictup.com",
+        "password": "$2a$14$ylO1peLUEDPHq3KA1BD2heWrIMWP4.85Laup7upIIkCYHzD20IVqC",
+        "registeredAt": "2021-09-13T12:54:56.409+00:00",
+        "lang_binding": [
+          {
+            "lang_from_iso": "en",
+            "lang_to_iso": "de",
+            "active": true
+          },
+          {
+            "lang_from_iso": "en",
+            "lang_to_iso": "ru",
+            "active": false
+          }
+        ],
+        "oauth_user": false
+      }
+    ]
+  },
+  {
+    "insert": "wordgroups",
+    "documents": [
+      {
+        "name": "Default",
+        "user_uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12",
+        "default": true,
+        "lang_binding": {
+          "lang_from_iso": "en",
+          "lang_to_iso": "de"
+        }
+      },
+      {
+        "name": "Default",
+        "user_uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12",
+        "default": true,
+        "lang_binding": {
+          "lang_from_iso": "en",
+          "lang_to_iso": "ru"
+        }
+      }
+    ]
+  }
+]

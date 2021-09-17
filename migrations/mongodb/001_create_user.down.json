@@ -1,0 +1,24 @@
+[
+  {
+    "delete": "users",
+    "deletes": [
+      {
+        "q": {
+          "uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12"
+        },
+        "limit": 0
+      }
+    ]
+  },
+  {
+    "delete": "wordgroups",
+    "deletes": [
+      {
+        "q": {
+          "user_uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12"
+        },
+        "limit": 0
+      }
+    ]
+  }
+]
