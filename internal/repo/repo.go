@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	usersCollection  = "users"
-	wordsCollection  = "words"
-	groupsCollection = "groups"
+	usersCollection      = "users"
+	wordsCollection      = "words"
+	wordgroupsCollection = "wordgroups"
 )
 
 type Repositories struct {
@@ -51,6 +51,6 @@ func New(cfg *config.Config, log logger.Logger, clients *client.Clients) *Reposi
 	return &Repositories{
 		UserRepo:      mongo.NewUserRepoMongo(log, mongoDatabase.Collection(usersCollection)),
 		WordRepo:      mongo.NewWordRepoMongo(log, mongoDatabase.Collection(wordsCollection)),
-		WordGroupRepo: mongo.NewWordGroupRepoMongo(log, mongoDatabase.Collection(groupsCollection)),
+		WordGroupRepo: mongo.NewWordGroupRepoMongo(log, mongoDatabase.Collection(wordgroupsCollection)),
 	}
 }
