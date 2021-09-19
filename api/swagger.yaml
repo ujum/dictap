@@ -6,22 +6,21 @@ definitions:
         type: string
       password:
         type: string
+    required:
+    - old_password
+    - password
     type: object
   dto.LangBinding:
     properties:
       active:
         type: boolean
-      lang_from_iso:
+      from_iso:
         type: string
-      lang_to_iso:
+      to_iso:
         type: string
-    type: object
-  dto.LangBindingCreate:
-    properties:
-      lang_from_iso:
-        type: string
-      lang_to_iso:
-        type: string
+    required:
+    - from_iso
+    - to_iso
     type: object
   dto.TokenDTO:
     properties:
@@ -29,6 +28,9 @@ definitions:
         type: string
       refresh_token:
         type: string
+    required:
+    - access_token
+    - refresh_token
     type: object
   dto.User:
     properties:
@@ -53,7 +55,7 @@ definitions:
         type: string
       lang_binding:
         items:
-          $ref: '#/definitions/dto.LangBindingCreate'
+          $ref: '#/definitions/dto.LangBinding'
         type: array
       name:
         type: string
@@ -61,6 +63,10 @@ definitions:
         type: string
       phone:
         type: string
+    required:
+    - email
+    - lang_binding
+    - name
     type: object
   dto.UserCredentials:
     properties:
@@ -68,6 +74,9 @@ definitions:
         type: string
       password:
         type: string
+    required:
+    - email
+    - password
     type: object
   dto.UserUpdate:
     properties:
@@ -79,6 +88,8 @@ definitions:
         type: string
       phone:
         type: string
+    required:
+    - lang_binding
     type: object
   dto.Word:
     properties:
@@ -93,15 +104,22 @@ definitions:
         type: string
       name:
         type: string
+    required:
+    - group_id
+    - name
     type: object
   dto.WordGroup:
     properties:
+      default:
+        type: boolean
       id:
         type: string
       lang_binding:
         $ref: '#/definitions/dto.LangBinding'
       name:
         type: string
+    required:
+    - lang_binding
     type: object
   dto.WordGroupCreate:
     properties:
@@ -109,6 +127,8 @@ definitions:
         $ref: '#/definitions/dto.LangBinding'
       name:
         type: string
+    required:
+    - lang_binding
     type: object
   dto.WordGroupMovement:
     properties:
@@ -116,6 +136,9 @@ definitions:
         type: string
       to_group_id:
         type: string
+    required:
+    - from_group_id
+    - to_group_id
     type: object
   v1.errResponse:
     properties:
@@ -241,7 +264,7 @@ paths:
       summary: User info
       tags:
       - Users
-    put:
+    patch:
       description: Update user
       parameters:
       - description: update by uid

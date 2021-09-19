@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"github.com/ujum/dictap/internal/api"
@@ -25,19 +26,13 @@ const userNotFoundMsg = "user not found"
 // @Router /api/v1/users/{uid} [get]
 func (handler *Handler) userInfo(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
-
 	if uid == "current" {
-		currentUser, err := api.GetCurrentUser(ctx)
+		currentUID, err := api.GetCurrentUserUID(ctx)
 		if err != nil {
 			badRequestResponse(ctx, err)
 			return
 		}
-		username, err := currentUser.GetUsername()
-		if err != nil {
-			badRequestResponse(ctx, err)
-			return
-		}
-		uid = username
+		uid = currentUID
 	}
 	user, err := handler.services.UserService.GetByUID(api.RequestContext(ctx), uid)
 	if err != nil {
@@ -94,7 +89,8 @@ func (handler *Handler) createUser(ctx iris.Context) {
 		badRequestResponse(ctx, err)
 		return
 	}
-	uid, err := handler.services.UserService.Create(api.RequestContext(ctx), user)
+	requestContext := api.RequestContext(ctx)
+	uid, err := handler.services.UserService.Create(requestContext, user)
 	if err := err; err != nil {
 		if err == derr.ErrAlreadyExists {
 			badRequestResponse(ctx, err)
@@ -103,7 +99,23 @@ func (handler *Handler) createUser(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
+	handler.createDefaultGroup(ctx, user, uid, requestContext)
 	createdResponse(ctx, uid)
+}
+
+func (handler *Handler) createDefaultGroup(ctx iris.Context, user *dto.UserCreate, uid string, requestContext context.Context) {
+	if len(user.LangBinding) > 0 {
+		wordGroupDTO := dto.WordGroupCreate{
+			Name:        "Default",
+			UserUID:     uid,
+			LangBinding: user.LangBinding[0],
+			Default:     true,
+		}
+		_, err := handler.services.WordGroupService.Create(requestContext, &wordGroupDTO)
+		if err != nil {
+			serverErrorResponse(ctx, err)
+		}
+	}
 }
 
 // updateUser godoc
@@ -118,7 +130,7 @@ func (handler *Handler) createUser(ctx iris.Context) {
 // @Failure 404 {object} errResponse
 // @Failure 500 {object} errResponse
 // @Security ApiKeyAuth
-// @Router /api/v1/users/{uid} [put]
+// @Router /api/v1/users/{uid} [patch]
 func (handler *Handler) updateUser(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
 

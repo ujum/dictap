@@ -8,11 +8,11 @@ type Word struct {
 }
 
 type WordCreate struct {
-	Name    string `json:"name"`
-	GroupID string `json:"group_id"`
+	Name    string `json:"name" validate:"required"`
+	GroupID string `json:"group_id" validate:"required"`
 }
 
 type WordGroupMovement struct {
-	FromGroupID string `json:"from_group_id"`
-	ToGroupID   string `json:"to_group_id"`
+	FromGroupID string `json:"from_group_id" validate:"required"`
+	ToGroupID   string `json:"to_group_id" validate:"required"`
 }

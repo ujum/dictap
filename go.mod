@@ -6,6 +6,7 @@ require (
 	github.com/Joker/hpp v1.0.0 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
+	github.com/go-playground/validator/v10 v10.9.0
 	github.com/google/uuid v1.3.0
 	github.com/iris-contrib/swagger/v12 v12.2.0-alpha
 	github.com/jinzhu/copier v0.3.2

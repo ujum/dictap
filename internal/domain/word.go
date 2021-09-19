@@ -13,5 +13,5 @@ type WG struct {
 type Word struct {
 	ID      string    `bson:"_id,omitempty"`
 	Name    string    `bson:"name"`
-	AddedAt time.Time `bson:"added_at"`
+	AddedAt time.Time `bson:"added_at,omitempty"`
 }

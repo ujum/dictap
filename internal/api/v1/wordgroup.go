@@ -97,17 +97,11 @@ func (handler *Handler) getWordGroup(ctx iris.Context) {
 // @Security ApiKeyAuth
 // @Router /api/v1/wordgroups/langs/{from_iso}/{to_iso} [get]
 func (handler *Handler) getWordGroupsByLang(ctx iris.Context) {
-	fromISO := ctx.Params().Get("from_iso")
-	if fromISO == "" {
-		badRequestResponse(ctx, errors.New("param from_iso not provided"))
+	langBinding := &dto.LangBinding{}
+	if err := ctx.ReadParams(langBinding); err != nil {
+		badRequestResponse(ctx, err)
 		return
 	}
-	toISO := ctx.Params().Get("to_iso")
-	if toISO == "" {
-		badRequestResponse(ctx, errors.New("param to_iso not provided"))
-		return
-	}
-	langBinding := &dto.LangBinding{LangFromISO: fromISO, LangToISO: toISO}
 
 	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
@@ -119,7 +113,7 @@ func (handler *Handler) getWordGroupsByLang(ctx iris.Context) {
 		serverErrorResponse(ctx, err)
 		return
 	}
-	wordGroupsDTO := &[]*dto.WordGroup{}
+	wordGroupsDTO := new([]*dto.WordGroup)
 	if err = copier.Copy(wordGroupsDTO, wordGroups); err != nil {
 		serverErrorResponse(ctx, err)
 		return
@@ -141,18 +135,11 @@ func (handler *Handler) getWordGroupsByLang(ctx iris.Context) {
 // @Security ApiKeyAuth
 // @Router /api/v1/wordgroups/langs/{from_iso}/{to_iso}/default [get]
 func (handler *Handler) getDefaultWordGroupByLang(ctx iris.Context) {
-	fromISO := ctx.Params().Get("from_iso")
-	if fromISO == "" {
-		badRequestResponse(ctx, errors.New("param from_iso not provided"))
+	langBinding := &dto.LangBinding{}
+	if err := ctx.ReadParams(langBinding); err != nil {
+		badRequestResponse(ctx, err)
 		return
 	}
-	toISO := ctx.Params().Get("to_iso")
-	if toISO == "" {
-		badRequestResponse(ctx, errors.New("param to_iso not provided"))
-		return
-	}
-	langBinding := &dto.LangBinding{LangFromISO: fromISO, LangToISO: toISO}
-
 	userUID, err := api.GetCurrentUserUID(ctx)
 	if err != nil {
 		badRequestResponse(ctx, err)

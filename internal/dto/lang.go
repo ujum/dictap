@@ -1,12 +1,7 @@
 package dto
 
-type LangBindingCreate struct {
-	LangFromISO string `json:"lang_from_iso"`
-	LangToISO   string `json:"lang_to_iso"`
-}
-
 type LangBinding struct {
-	LangFromISO string `json:"lang_from_iso"`
-	LangToISO   string `json:"lang_to_iso"`
-	Active      bool   `json:"active,omitempty"`
+	FromISO string `json:"from_iso" param:"from_iso" validate:"required"`
+	ToISO   string `json:"to_iso" param:"to_iso" validate:"required"`
+	Active  bool   `json:"active,omitempty"`
 }

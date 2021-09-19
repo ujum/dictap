@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/iris-contrib/swagger/v12"
 	"github.com/iris-contrib/swagger/v12/swaggerFiles"
 	"github.com/kataras/iris/v12"
@@ -30,6 +31,7 @@ func NewHandler(log logger.Logger, cfg *config.ServerConfig, services *service.S
 func (handler *Handler) RegisterRoutes(app *iris.Application) {
 	handler.routeSwagger(app)
 	app.UseRouter(handler.corsMiddleware)
+	app.Validator = validator.New()
 	handler.routeV1(app)
 }
 
@@ -50,7 +52,7 @@ func (handler *Handler) routeV1(app *iris.Application) {
 			userGroup.Get("/", handler.getAllUsers)
 			userGroup.Get("/{uid}", handler.userInfo)
 			userGroup.Post("/", handler.createUser)
-			userGroup.Put("/{uid}", handler.updateUser)
+			userGroup.Patch("/{uid}", handler.updateUser)
 			userGroup.Delete("/{uid}", handler.deleteUser)
 			userGroup.Put("/{uid}/pass", handler.changeUserPass)
 		}

@@ -43,9 +43,9 @@ func (w *WordServiceImpl) Create(ctx context.Context, wordDTO *dto.WordCreate) (
 		if err != nil {
 			return "", err
 		}
-
+	} else {
+		wordId = word.ID
 	}
-	err = w.AddToGroup(ctx, wordDTO.Name, wordDTO.GroupID)
 	return wordId, err
 }
 

@@ -33,13 +33,13 @@ func (wgs *WordGroupServiceImpl) GetByIDAndUser(ctx context.Context, groupID str
 }
 
 func (wgs *WordGroupServiceImpl) GetDefault(ctx context.Context, langBindingDTO *dto.LangBinding, userUID string) (*domain.WordGroup, error) {
-	langBinding := &domain.LangBinding{LangFromISO: langBindingDTO.LangFromISO, LangToISO: langBindingDTO.LangToISO}
+	langBinding := &domain.LangBinding{FromISO: langBindingDTO.FromISO, ToISO: langBindingDTO.ToISO}
 
 	return wgs.wordGroupRepo.FindByLangAndUser(ctx, langBinding, userUID, true)
 }
 
 func (wgs *WordGroupServiceImpl) GetAllByLangAndUser(ctx context.Context, langBindingDTO *dto.LangBinding, userUID string) ([]*domain.WordGroup, error) {
-	langBinding := &domain.LangBinding{LangFromISO: langBindingDTO.LangFromISO, LangToISO: langBindingDTO.LangToISO}
+	langBinding := &domain.LangBinding{FromISO: langBindingDTO.FromISO, ToISO: langBindingDTO.ToISO}
 	return wgs.wordGroupRepo.FindAllByLangAndUser(ctx, langBinding, userUID)
 }
 

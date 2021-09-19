@@ -214,7 +214,42 @@ var doc = `{
                     }
                 }
             },
-            "put": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "delete by uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.errResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -261,41 +296,6 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/v1.errResponse"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.errResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Delete user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Delete user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "delete by uid",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": ""
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -906,6 +906,10 @@ var doc = `{
     "definitions": {
         "dto.ChangeUserPassword": {
             "type": "object",
+            "required": [
+                "old_password",
+                "password"
+            ],
             "properties": {
                 "old_password": {
                     "type": "string"
@@ -917,31 +921,28 @@ var doc = `{
         },
         "dto.LangBinding": {
             "type": "object",
+            "required": [
+                "from_iso",
+                "to_iso"
+            ],
             "properties": {
                 "active": {
                     "type": "boolean"
                 },
-                "lang_from_iso": {
+                "from_iso": {
                     "type": "string"
                 },
-                "lang_to_iso": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.LangBindingCreate": {
-            "type": "object",
-            "properties": {
-                "lang_from_iso": {
-                    "type": "string"
-                },
-                "lang_to_iso": {
+                "to_iso": {
                     "type": "string"
                 }
             }
         },
         "dto.TokenDTO": {
             "type": "object",
+            "required": [
+                "access_token",
+                "refresh_token"
+            ],
             "properties": {
                 "access_token": {
                     "type": "string"
@@ -979,6 +980,11 @@ var doc = `{
         },
         "dto.UserCreate": {
             "type": "object",
+            "required": [
+                "email",
+                "lang_binding",
+                "name"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -986,7 +992,7 @@ var doc = `{
                 "lang_binding": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.LangBindingCreate"
+                        "$ref": "#/definitions/dto.LangBinding"
                     }
                 },
                 "name": {
@@ -1002,6 +1008,10 @@ var doc = `{
         },
         "dto.UserCredentials": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -1013,6 +1023,9 @@ var doc = `{
         },
         "dto.UserUpdate": {
             "type": "object",
+            "required": [
+                "lang_binding"
+            ],
             "properties": {
                 "lang_binding": {
                     "type": "array",
@@ -1041,6 +1054,10 @@ var doc = `{
         },
         "dto.WordCreate": {
             "type": "object",
+            "required": [
+                "group_id",
+                "name"
+            ],
             "properties": {
                 "group_id": {
                     "type": "string"
@@ -1052,7 +1069,13 @@ var doc = `{
         },
         "dto.WordGroup": {
             "type": "object",
+            "required": [
+                "lang_binding"
+            ],
             "properties": {
+                "default": {
+                    "type": "boolean"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1066,6 +1089,9 @@ var doc = `{
         },
         "dto.WordGroupCreate": {
             "type": "object",
+            "required": [
+                "lang_binding"
+            ],
             "properties": {
                 "lang_binding": {
                     "$ref": "#/definitions/dto.LangBinding"
@@ -1077,6 +1103,10 @@ var doc = `{
         },
         "dto.WordGroupMovement": {
             "type": "object",
+            "required": [
+                "from_group_id",
+                "to_group_id"
+            ],
             "properties": {
                 "from_group_id": {
                     "type": "string"

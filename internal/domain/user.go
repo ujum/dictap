@@ -5,19 +5,19 @@ import (
 )
 
 type LangBinding struct {
-	LangFromISO string `bson:"lang_from_iso"`
-	LangToISO   string `bson:"lang_to_iso"`
-	Active      bool   `bson:"active,omitempty"`
+	FromISO string `bson:"from_iso"`
+	ToISO   string `bson:"to_iso"`
+	Active  bool   `bson:"active,omitempty"`
 }
 
 type User struct {
 	ID           string        `bson:"_id,omitempty"`
-	UID          string        `bson:"uid"`
-	Name         string        `bson:"name"`
+	UID          string        `bson:"uid,omitempty"`
+	Name         string        `bson:"name,omitempty"`
 	Email        string        `bson:"email,omitempty"`
-	Phone        string        `bson:"phone"`
+	Phone        string        `bson:"phone,omitempty"`
 	Password     string        `bson:"password,omitempty"`
-	RegisteredAt time.Time     `bson:"registeredAt"`
-	LangBinding  []LangBinding `bson:"lang_binding"`
-	OAuthUser    bool          `bson:"oauth_user"`
+	RegisteredAt time.Time     `bson:"registeredAt,omitempty"`
+	LangBinding  []LangBinding `bson:"lang_binding,omitempty"`
+	OAuthUser    bool          `bson:"oauth_user,omitempty"`
 }

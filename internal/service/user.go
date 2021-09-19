@@ -80,11 +80,25 @@ func (us *UserServiceImpl) Create(ctx context.Context, userDTO *dto.UserCreate) 
 	}
 	user.RegisteredAt = time.Now()
 	user.UID = uuid.New().String()
-	if len(user.LangBinding) > 0 {
-		user.LangBinding[0].Active = true
-	}
+	us.setActiveLangBinding(user)
 	_, err := us.userRepo.Create(ctx, user)
 	return user.UID, err
+}
+
+func (us *UserServiceImpl) setActiveLangBinding(user *domain.User) {
+	if len(user.LangBinding) > 0 {
+		var hasActive bool
+		for i := 0; i < len(user.LangBinding); i++ {
+			if hasActive {
+				user.LangBinding[i].Active = false
+			} else {
+				hasActive = user.LangBinding[i].Active
+			}
+		}
+		if !hasActive {
+			user.LangBinding[0].Active = true
+		}
+	}
 }
 
 func (us *UserServiceImpl) Update(ctx context.Context, userDTO *dto.UserUpdate) error {

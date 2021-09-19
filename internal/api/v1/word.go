@@ -81,13 +81,19 @@ func (handler *Handler) createWord(ctx iris.Context) {
 		return
 	}
 
-	wordGroup, err := handler.services.WordGroupService.GetByIDAndUser(api.RequestContext(ctx), word.GroupID, userUID)
+	requestContext := api.RequestContext(ctx)
+	wordGroup, err := handler.services.WordGroupService.GetByIDAndUser(requestContext, word.GroupID, userUID)
 	if err != nil || wordGroup == nil {
 		notFoundResponse(ctx, wordGroupNotFoundMsg)
 		return
 	}
 
-	wordID, err := handler.services.WordService.Create(api.RequestContext(ctx), word)
+	wordID, err := handler.services.WordService.Create(requestContext, word)
+	if err := err; err != nil {
+		serverErrorResponse(ctx, err)
+		return
+	}
+	err = handler.services.WordService.AddToGroup(requestContext, word.Name, word.GroupID)
 	if err := err; err != nil {
 		serverErrorResponse(ctx, err)
 		return
