@@ -7,6 +7,7 @@ type User struct {
 	Phone       string        `json:"phone"`
 	OAuthUser   bool          `json:"oauth_user"`
 	LangBinding []LangBinding `json:"lang_binding,omitempty"`
+	Roles       []string      `json:"roles"`
 }
 
 type UserUpdate struct {

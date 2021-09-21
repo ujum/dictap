@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+const (
+	privateKeyPath = "/token/rsa_private_key.pem"
+	publicKeyPath  = "/token/rsa_public_key.pem"
+	appName        = "dictup"
+)
+
 type TokenService interface {
 	Generate(requestCtx ctx.Context, credentials *dto.UserCredentials) (*dto.TokenDTO, error)
 	GenerateForUser(user *domain.User) (*dto.TokenDTO, error)
@@ -28,7 +34,7 @@ type JwtTokenService struct {
 }
 
 func newJwtSigner(cfg *config.Config) (*jwt.Signer, error) {
-	privateKeyRSA, err := jwt.LoadPrivateKeyRSA(cfg.ConfigDir + "/rsa_private_key.pem")
+	privateKeyRSA, err := jwt.LoadPrivateKeyRSA(cfg.ConfigDir + privateKeyPath)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +44,7 @@ func newJwtSigner(cfg *config.Config) (*jwt.Signer, error) {
 }
 
 func newJwtVerifier(cfg *config.Config) (*jwt.Verifier, error) {
-	publicKeyRSA, err := jwt.LoadPublicKeyRSA(cfg.ConfigDir + "/rsa_public_key.pem")
+	publicKeyRSA, err := jwt.LoadPublicKeyRSA(cfg.ConfigDir + publicKeyPath)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +98,8 @@ func (tokenSrv *JwtTokenService) GenerateForUser(user *domain.User) (*dto.TokenD
 		ID:            user.UID,
 		Username:      user.Name,
 		Email:         user.Email,
-		Fields:        map[string]interface{}{"app": "dictup"},
+		Fields:        map[string]interface{}{"app": appName},
+		Roles:         user.Roles,
 	}
 	refreshMin := tokenSrv.cfg.Server.Security.ApiKeyAuth.RefreshTokenMaxAgeMin
 	tokenPair, err := tokenSrv.signer.NewTokenPair(accessClaims, refreshClaims, time.Duration(refreshMin)*time.Minute)

@@ -3,6 +3,16 @@
     "insert": "users",
     "documents": [
       {
+        "name": "admin",
+        "uid": "d5035d5c-c164-48c9-9914-10a054390233",
+        "email": "admin@dictup.com",
+        "password": "$2a$14$vJvUFyhSZXQzIN606rXkveLBnY85vEmS7HZ0.nhZEz/q1MOqc0nd2",
+        "registeredAt": "2021-09-20T12:54:56.409+00:00",
+        "roles": [
+          "admin"
+        ]
+      },
+      {
         "name": "test1",
         "uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12",
         "email": "test1@dictup.com",
@@ -19,6 +29,9 @@
             "to_iso": "ru",
             "active": false
           }
+        ],
+        "roles": [
+          "user"
         ],
         "oauth_user": false
       }

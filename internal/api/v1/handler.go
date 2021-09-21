@@ -44,8 +44,8 @@ func (handler *Handler) routeV1(app *iris.Application) {
 	tokenVerifyHandler := handler.services.JwtVerifier.Verify(func() interface{} {
 		return new(context.SimpleUser)
 	})
-
-	v1Group := app.Party("/api/v1", tokenVerifyHandler)
+	rbacHandler := handler.services.RBACService.Handler()
+	v1Group := app.Party("/api/v1", tokenVerifyHandler, rbacHandler)
 	{
 		userGroup := v1Group.Party("/users")
 		{
@@ -54,7 +54,7 @@ func (handler *Handler) routeV1(app *iris.Application) {
 			userGroup.Post("/", handler.createUser)
 			userGroup.Patch("/{uid}", handler.updateUser)
 			userGroup.Delete("/{uid}", handler.deleteUser)
-			userGroup.Put("/{uid}/pass", handler.changeUserPass)
+			userGroup.Put("/pass", handler.changeUserPass)
 		}
 		wordGroup := v1Group.Party("/words")
 		{

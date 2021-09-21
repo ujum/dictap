@@ -133,6 +133,14 @@ func (handler *Handler) createDefaultGroup(ctx iris.Context, user *dto.UserCreat
 // @Router /api/v1/users/{uid} [patch]
 func (handler *Handler) updateUser(ctx iris.Context) {
 	uid := ctx.Params().Get("uid")
+	if uid == "current" {
+		currentUID, err := api.GetCurrentUserUID(ctx)
+		if err != nil {
+			badRequestResponse(ctx, err)
+			return
+		}
+		uid = currentUID
+	}
 
 	user := &dto.UserUpdate{}
 	if err := ctx.ReadJSON(user); err != nil {

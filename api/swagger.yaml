@@ -46,6 +46,10 @@ definitions:
         type: boolean
       phone:
         type: string
+      roles:
+        items:
+          type: string
+        type: array
       uid:
         type: string
     type: object

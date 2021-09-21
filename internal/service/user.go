@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+const userRole = "user"
+
 type UserService interface {
 	GetByUID(ctx context.Context, uid string) (*domain.User, error)
 	GetByEmail(ctx context.Context, email string) (*domain.User, error)
@@ -80,6 +82,7 @@ func (us *UserServiceImpl) Create(ctx context.Context, userDTO *dto.UserCreate) 
 	}
 	user.RegisteredAt = time.Now()
 	user.UID = uuid.New().String()
+	user.Roles = []string{userRole}
 	us.setActiveLangBinding(user)
 	_, err := us.userRepo.Create(ctx, user)
 	return user.UID, err

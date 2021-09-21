@@ -973,6 +973,12 @@ var doc = `{
                 "phone": {
                     "type": "string"
                 },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "uid": {
                     "type": "string"
                 }

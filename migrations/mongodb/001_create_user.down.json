@@ -4,7 +4,13 @@
     "deletes": [
       {
         "q": {
-          "uid": "300b1378-8dd8-45bd-9526-3f4cb0972f12"
+          "email": "test1@dictup.com"
+        },
+        "limit": 0
+      },
+      {
+        "q": {
+          "email": "admin@dictup.com"
         },
         "limit": 0
       }

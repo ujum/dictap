@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/Joker/hpp v1.0.0 // indirect
+	github.com/casbin/casbin/v2 v2.37.2
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/validator/v10 v10.9.0

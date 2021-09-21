@@ -14,6 +14,7 @@ type Services struct {
 	JwtVerifier      *jwt.Verifier
 	WordService      WordService
 	WordGroupService WordGroupService
+	RBACService      RBACService
 }
 
 type Deps struct {
@@ -33,9 +34,11 @@ func NewServices(cfg *config.Config, appLogger logger.Logger, repos *repo.Reposi
 	if err != nil {
 		return nil, err
 	}
-
+	rbacService, err := newRBACService(cfg)
+	if err != nil {
+		return nil, err
+	}
 	jwtTokenService := newJwtTokenService(cfg, appLogger, verifier, signer, userService)
-
 	wordGroupService := newWordGroupService(repos, appLogger)
 	wordService := newWordService(repos, appLogger)
 
@@ -45,6 +48,7 @@ func NewServices(cfg *config.Config, appLogger logger.Logger, repos *repo.Reposi
 		JwtVerifier:      verifier,
 		WordService:      wordService,
 		WordGroupService: wordGroupService,
+		RBACService:      rbacService,
 	}, nil
 }
 

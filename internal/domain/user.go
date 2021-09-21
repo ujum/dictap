@@ -19,5 +19,6 @@ type User struct {
 	Password     string        `bson:"password,omitempty"`
 	RegisteredAt time.Time     `bson:"registeredAt,omitempty"`
 	LangBinding  []LangBinding `bson:"lang_binding,omitempty"`
+	Roles        []string      `bson:"roles,omitempty"`
 	OAuthUser    bool          `bson:"oauth_user,omitempty"`
 }
