@@ -1,5 +1,9 @@
 # Dictup - Save and learn new words
 
+## APi
+
+http://localhost:8080/swagger/index.html
+
 ## Usage
 
 Add env vars for auth with Google Account:
