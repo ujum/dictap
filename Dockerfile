@@ -11,7 +11,7 @@ COPY ./ ./
 
 RUN make build
 
-FROM alpine:3.14
+FROM scratch
 
 WORKDIR /home/dictup/
 COPY --from=builder /home/app/dictup/out/ ./
