@@ -17,13 +17,15 @@ type MongoClient struct {
 }
 
 func CreateMongoClient(parentCtx context.Context, cfg *config.MongoDatasourceConfig, log logger.Logger) (*MongoClient, error) {
-	var endpoint string
-	if cfg.Username != "" {
-		endpoint = fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.Username, cfg.Password, cfg.Host, cfg.Port)
-	} else {
-		endpoint = fmt.Sprintf("mongodb://%s:%d", cfg.Host, cfg.Port)
-	}
+	endpoint := fmt.Sprintf("mongodb://%s:%d", cfg.Host, cfg.Port)
 	opts := options.Client().ApplyURI(endpoint)
+	if cfg.Username != "" {
+		opts.SetAuth(options.Credential{
+			AuthMechanism: "SCRAM-SHA-256",
+			Username:      cfg.Username,
+			Password:      cfg.Password,
+		})
+	}
 
 	client, err := mongo.NewClient(opts)
 	if err != nil {

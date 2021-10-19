@@ -5,7 +5,12 @@ SOURCE_MAIN_NAME=./cmd/dictup/main.go
 SWAGGER_SCAN=./internal/server/server.go
 MIGRATION_DIR=migrations
 DB_HOST=localhost
-DB_PORT=27017
+DB_PORT=27018
+DB_HOST=localhost
+DB_USERNAME=dictup
+DB_PASS=dictup
+DB_DB=dictup
+DB_URL=mongodb://${DB_USERNAME}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_DB}?authSource=admin
 
 build: copy-configs swagger
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o ${BINARY_NAME} ${SOURCE_MAIN_NAME}
@@ -55,7 +60,7 @@ test-cover-report:
 	go tool cover -html=${BUILD_DIR}/test-coverage.out -o ${BUILD_DIR}/test-coverage.html
 
 migrate-up:
-	 docker run --rm --name mig -v $(PWD)/${MIGRATION_DIR}:/${MIGRATION_DIR} --network host migrate/migrate:4 -path=/${MIGRATION_DIR}/mongodb -database mongodb://${DB_HOST}:${DB_PORT}/dictup up $(version)
+	 docker run --rm --name mig -v $(PWD)/${MIGRATION_DIR}:/${MIGRATION_DIR} --network host migrate/migrate:4 -path=/${MIGRATION_DIR}/mongodb -database ${DB_URL} up $(version)
 
 migrate-down:
-	 docker run --rm --name mig -v $(PWD)/${MIGRATION_DIR}:/${MIGRATION_DIR} --network host migrate/migrate:4 -path=/${MIGRATION_DIR}/mongodb -database mongodb://${DB_HOST}:${DB_PORT}/dictup down $(version)
+	 docker run --rm --name mig -v $(PWD)/${MIGRATION_DIR}:/${MIGRATION_DIR} --network host migrate/migrate:4 -path=/${MIGRATION_DIR}/mongodb -database ${DB_URL} down $(version)

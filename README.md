@@ -13,4 +13,5 @@ Add env vars for auth with Google Account:
 
 ```sh
 $ docker-compose up
+$ make migrate-up
 ```
