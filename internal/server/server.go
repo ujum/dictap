@@ -74,6 +74,14 @@ func New(cfg *config.ServerConfig, appLogger logger.Logger, services *service.Se
 }
 
 func (appSrv *Server) Start(ctx context.Context) error {
+	// stop the server if context closed
+	go func() {
+		<-ctx.Done()
+		if err := appSrv.Stop(); err != nil {
+			appSrv.Logger.Debugf("http: web server shutdown err: %v", err)
+		}
+	}()
+
 	if err := appSrv.Iris.Run(iris.Server(appSrv.httpServer)); err != nil {
 		if err == http.ErrServerClosed {
 			appSrv.Logger.Info("http: web server shutdown complete")
@@ -82,13 +90,6 @@ func (appSrv *Server) Start(ctx context.Context) error {
 		appSrv.Logger.Errorf("http: web server closed unexpect: %v", err)
 		return err
 	}
-	// stop the server if context closed
-	go func() {
-		<-ctx.Done()
-		if err := appSrv.Stop(); err != nil {
-			appSrv.Logger.Debugf("http: web server shutdown err: %v", err)
-		}
-	}()
 	return nil
 }
 
