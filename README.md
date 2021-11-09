@@ -17,6 +17,5 @@ $ make migrate-up
 ```
 
 ## Test users
-- admin - admin@dictup.com
-- test1 - test1@dictup.com
-- 
+- login: admin@dictup.com pass: admin
+- login: test1@dictup.com pass: test1
