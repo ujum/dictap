@@ -15,3 +15,8 @@ Add env vars for auth with Google Account:
 $ docker-compose up
 $ make migrate-up
 ```
+
+## Test users
+- admin - admin@dictup.com
+- test1 - test1@dictup.com
+- 
